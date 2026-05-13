@@ -1,156 +1,382 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
+import CameraCapture from '../../components/camera/CameraCapture'   // ← IMPORT BARU
 
-export default function AdminLaporan() {
-  const laporan    = useStore(s => s.laporan)
-  const openModal  = useStore(s => s.openModal)
-  const showToast  = useStore(s => s.showToast)
-  const [filter, setFilter]   = useState('semua')
-  const [search,  setSearch]  = useState('')
-  const [page, setPage]       = useState(1)
-  const PER_PAGE = 10
+const LOKASI_OPTIONS = [
+  'Kawasan Megamas','Pasar 45','Jl. Boulevard','Manado Town Square',
+  'Kawasan Wenang','Pasar Bersehati','Jl. Sam Ratulangi','Lainnya',
+]
 
-  const filtered = laporan.filter(l => {
-    if (filter === 'baru'    && l.status !== 'baru')    return false
-    if (filter === 'proses'  && l.status !== 'proses')  return false
-    if (filter === 'selesai' && l.status !== 'selesai') return false
-    if (filter === 'ai'      && !l.sumber.includes('AI')) return false
-    if (filter === 'warga'   && l.sumber.includes('AI')) return false
-    if (search && !l.lokasi.toLowerCase().includes(search.toLowerCase()) && !l.sumber.toLowerCase().includes(search.toLowerCase())) return false
-    return true
+export default function PubBuatLaporan() {
+  const tambahLaporan = useStore(s => s.tambahLaporan)
+  const showToast     = useStore(s => s.showToast)
+  const navigate      = useNavigate()
+
+  const [step, setStep]       = useState(1)   // 1=form, 2=sukses
+  const [loading, setLoading] = useState(false)
+  const [gpsLoading, setGpsLoading] = useState(false)
+
+  /* ─── State BARU: kamera & foto ─── */
+  const [showCamera, setShowCamera]     = useState(false)
+  const [photos, setPhotos]             = useState([])   // array {raw, blurred, blurZones, id}
+  const [previewPhoto, setPreviewPhoto] = useState(null) // foto yang sedang dilihat besar
+
+  const [form, setForm] = useState({
+    lokasi:'', subLokasi:'', jenis:'Berjualan', jumlah:1,
+    deskripsi:'', pelapor:'', anonymous:false, darurat:false,
   })
 
-  const pages   = Math.ceil(filtered.length / PER_PAGE)
-  const paged   = filtered.slice((page-1)*PER_PAGE, page*PER_PAGE)
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
-  const statusColor = { baru:'s-baru', proses:'s-proses', selesai:'s-selesai' }
-  const jenisColor  = { Berjualan:'red', Mengamen:'amber', Mengemis:'amber', Figuran:'red' }
-
-  const counts = {
-    semua: laporan.length,
-    baru: laporan.filter(l=>l.status==='baru').length,
-    proses: laporan.filter(l=>l.status==='proses').length,
-    selesai: laporan.filter(l=>l.status==='selesai').length,
+  /* ─── GPS ─── */
+  const getGPS = () => {
+    setGpsLoading(true)
+    navigator.geolocation?.getCurrentPosition(
+      (pos) => {
+        set('subLokasi', `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)} (GPS)`)
+        setGpsLoading(false)
+        showToast('✓ Lokasi GPS berhasil didapat')
+      },
+      () => {
+        setGpsLoading(false)
+        showToast('Tidak dapat mengakses GPS', 'var(--amber)')
+      }
+    )
   }
 
-  const handleExport = () => {
-    const csv = ['ID,Lokasi,Jenis,Jumlah,Sumber,Waktu,Status',
-      ...laporan.map(l => `${l.id},"${l.lokasi}",${l.jenis},${l.jumlah},"${l.sumber}","${l.waktu}",${l.status}`)
-    ].join('\n')
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv' }))
-    a.download = 'laporan-delcion.csv'
-    a.click()
-    showToast('✓ File CSV berhasil diunduh')
+  /* ─── Callback dari CameraCapture ─── */
+  const handlePhotoTaken = (rawUrl, blurredUrl, blurZones) => {
+    const newPhoto = {
+      id: Date.now(),
+      raw: rawUrl,
+      blurred: blurredUrl,    // ini yang akan dikirim / disimpan
+      blurZones,
+      hasBlur: blurZones.length > 0,
+    }
+    setPhotos(prev => [...prev, newPhoto])
+    setShowCamera(false)
+    showToast(
+      blurZones.length > 0
+        ? `✓ Foto ditambahkan (${blurZones.length} area disensor)`
+        : '✓ Foto ditambahkan (tanpa sensor)'
+    )
   }
 
-  return (
-    <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
-      {/* Topbar */}
-      <div style={{ padding:'12px 20px', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', justifyContent:'space-between', flexShrink:0 }}>
-        <div>
-          <div style={{ fontFamily:"'Syne',sans-serif", fontSize:16, fontWeight:800 }}>📋 Semua Laporan</div>
-          <div style={{ fontSize:12, color:'var(--text-muted)', marginTop:2 }}>Total {laporan.length} laporan tercatat</div>
-        </div>
-        <div style={{ display:'flex', gap:8 }}>
-          <button className="btn btn-sm" onClick={() => openModal('tambah-laporan')}
-            style={{ background:'rgba(46,204,113,0.15)', color:'var(--green)', border:'1px solid rgba(46,204,113,0.3)' }}>
-            + Tambah Manual
-          </button>
-          <button className="btn btn-sm btn-ghost" onClick={handleExport}>⬇ Export CSV</button>
-        </div>
+  const removePhoto = (id) => {
+    setPhotos(prev => prev.filter(p => p.id !== id))
+  }
+
+  /* ─── Submit laporan ─── */
+  const submit = () => {
+    if (!form.lokasi) { showToast('Mohon pilih lokasi kejadian', 'var(--amber)'); return }
+    setLoading(true)
+    setTimeout(() => {
+      tambahLaporan({
+        ...form,
+        sumber: form.anonymous ? 'Anonim' : (form.pelapor || 'Warga'),
+        // Hanya kirim foto yang sudah diblur, bukan foto asli
+        fotoBukti: photos.map(p => ({ url: p.blurred, hasBlur: p.hasBlur })),
+      })
+      setLoading(false)
+      setStep(2)
+    }, 1200)
+  }
+
+  /* ─── Reset form ─── */
+  const resetForm = () => {
+    setStep(1)
+    setPhotos([])
+    setForm({ lokasi:'', subLokasi:'', jenis:'Berjualan', jumlah:1, deskripsi:'', pelapor:'', anonymous:false, darurat:false })
+  }
+
+  /* ════════════════════════════════════
+     STEP 2: SUKSES
+  ════════════════════════════════════ */
+  if (step === 2) return (
+    <div style={{ maxWidth:500, margin:'60px auto', padding:'0 20px', textAlign:'center' }}>
+      <div style={{ fontSize:64, marginBottom:20 }}>✅</div>
+      <div style={{ fontFamily:"'Syne',sans-serif", fontSize:24, fontWeight:800, marginBottom:12 }}>Laporan Terkirim!</div>
+      <div style={{ fontSize:14, color:'var(--text-muted)', lineHeight:1.7, marginBottom:28 }}>
+        Terima kasih telah melapor. Tim kami akan segera menindaklanjuti laporan Anda.
+        Anda dapat memantau status laporan di menu Riwayat.
       </div>
-
-      <div style={{ flex:1, overflowY:'auto', padding:20 }}>
-        {/* Filters */}
-        <div style={{ display:'flex', gap:8, marginBottom:16, flexWrap:'wrap', alignItems:'center' }}>
-          {[
-            { key:'semua',   label:`Semua (${counts.semua})` },
-            { key:'baru',    label:`Baru (${counts.baru})` },
-            { key:'proses',  label:`Diproses (${counts.proses})` },
-            { key:'selesai', label:`Selesai (${counts.selesai})` },
-            { key:'ai',      label:'🤖 AI Detection' },
-            { key:'warga',   label:'👤 Laporan Warga' },
-          ].map(f => (
-            <button key={f.key}
-              onClick={() => { setFilter(f.key); setPage(1) }}
-              style={{ padding:'6px 14px', borderRadius:20, fontSize:12, fontWeight:500, cursor:'pointer',
-                background: filter===f.key ? 'var(--accent)' : 'transparent',
-                color: filter===f.key ? '#fff' : 'var(--text-muted)',
-                border: `1px solid ${filter===f.key ? 'var(--accent)' : 'var(--border)'}`,
-                transition:'all 0.15s' }}>
-              {f.label}
-            </button>
-          ))}
-          <input
-            style={{ marginLeft:'auto', padding:'6px 12px', borderRadius:8, border:'1px solid var(--border)',
-              background:'var(--surface2)', color:'var(--text)', fontSize:12, outline:'none', width:220 }}
-            placeholder="🔍 Cari lokasi, pelapor..."
-            value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} />
-        </div>
-
-        {/* Table */}
-        <div style={{ background:'var(--surface)', borderRadius:12, border:'1px solid var(--border)', overflow:'hidden' }}>
-          <table style={{ width:'100%', borderCollapse:'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom:'1px solid var(--border)' }}>
-                {['ID','Lokasi','Jenis','Jml Anak','Sumber','Waktu','Status','Aksi'].map(h => (
-                  <th key={h} style={{ textAlign:'left', fontSize:10, fontWeight:700, textTransform:'uppercase',
-                    letterSpacing:'1px', color:'var(--text-dim)', padding:'10px 12px' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {paged.map(l => (
-                <tr key={l.id} style={{ borderBottom:'1px solid rgba(255,255,255,0.04)', transition:'background 0.1s' }}
-                  onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.02)'}
-                  onMouseLeave={e => e.currentTarget.style.background='transparent'}>
-                  <td style={{ padding:'12px 12px', fontFamily:'monospace', color:'var(--text-dim)', fontSize:11 }}>#{l.id}</td>
-                  <td style={{ padding:'12px 12px' }}>
-                    <div style={{ fontSize:12, fontWeight:600 }}>{l.lokasi}</div>
-                    {l.subLokasi && <div style={{ fontSize:10, color:'var(--text-dim)' }}>{l.subLokasi}</div>}
-                  </td>
-                  <td style={{ padding:'12px 12px' }}>
-                    <span className={`tag ${jenisColor[l.jenis]||'amber'}`}>{l.jenis}</span>
-                  </td>
-                  <td style={{ padding:'12px 12px', fontSize:12 }}>{l.jumlah}</td>
-                  <td style={{ padding:'12px 12px', fontSize:12, color:'var(--text-muted)' }}>{l.sumber.includes('AI') ? '🤖 AI' : `👤 ${l.sumber}`}</td>
-                  <td style={{ padding:'12px 12px', fontSize:12, color:'var(--text-muted)' }}>{l.waktu}</td>
-                  <td style={{ padding:'12px 12px' }}>
-                    <span className={`status-pill ${statusColor[l.status]}`}>{l.status==='baru'?'Baru':l.status==='proses'?'Diproses':'Selesai'}</span>
-                  </td>
-                  <td style={{ padding:'12px 12px' }}>
-                    <div style={{ display:'flex', gap:4 }}>
-                      {l.status === 'baru' && (
-                        <button className="btn btn-primary btn-sm" onClick={() => openModal('tugaskan', l)}>Tugaskan</button>
-                      )}
-                      {l.status === 'proses' && (
-                        <button className="btn btn-green btn-sm" onClick={() => openModal('selesai', l)}>Selesaikan</button>
-                      )}
-                      <button className="btn btn-ghost btn-sm" onClick={() => openModal('detail', l)}>Detail</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {paged.length === 0 && (
-                <tr><td colSpan={8} style={{ padding:40, textAlign:'center', color:'var(--text-dim)', fontSize:13 }}>Tidak ada laporan ditemukan.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {pages > 1 && (
-          <div style={{ display:'flex', gap:4, justifyContent:'center', marginTop:20 }}>
-            {Array.from({ length: pages }, (_, i) => i+1).map(p => (
-              <button key={p} onClick={() => setPage(p)}
-                style={{ width:32, height:32, borderRadius:6, border:`1px solid ${p===page?'var(--accent)':'var(--border)'}`,
-                  background: p===page?'var(--accent)':'transparent',
-                  color: p===page?'#fff':'var(--text-muted)', fontSize:12, cursor:'pointer' }}>{p}</button>
+      <div style={{ background:'var(--surface)', borderRadius:12, border:'1px solid var(--border)', padding:20, marginBottom:24, textAlign:'left' }}>
+        <div style={{ fontSize:12, color:'var(--text-dim)', marginBottom:8 }}>Detail Laporan</div>
+        {[
+          ['Lokasi', form.lokasi],
+          ['Jenis',  form.jenis],
+          ['Jumlah Anak', `${form.jumlah} orang`],
+          ['Foto Bukti', `${photos.length} foto`],
+          ['Status', 'Menunggu Proses'],
+        ].map(([k,v]) => (
+          <div key={k} style={{ display:'flex', justifyContent:'space-between', padding:'6px 0', borderBottom:'1px solid rgba(255,255,255,0.04)', fontSize:12 }}>
+            <span style={{ color:'var(--text-muted)' }}>{k}</span>
+            <span style={{ fontWeight:600 }}>{v}</span>
+          </div>
+        ))}
+        {/* Preview thumbnail foto */}
+        {photos.length > 0 && (
+          <div style={{ marginTop: 12, display:'flex', gap: 8, flexWrap:'wrap' }}>
+            {photos.map(p => (
+              <div key={p.id} style={{ position:'relative', width:60, height:60, borderRadius:8, overflow:'hidden', border:'1px solid var(--border)' }}>
+                <img src={p.blurred} alt="bukti" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                {p.hasBlur && (
+                  <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'rgba(0,0,0,0.6)', fontSize:8, textAlign:'center', padding:'2px 0', color:'#fff' }}>
+                    🛡 SENSOR
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         )}
       </div>
+      <div style={{ display:'flex', gap:10, justifyContent:'center' }}>
+        <button className="btn btn-ghost" onClick={resetForm}>+ Laporan Lain</button>
+        <button className="btn btn-primary" onClick={() => navigate('/public/riwayat')}>📋 Lihat Riwayat</button>
+      </div>
     </div>
+  )
+
+  /* ════════════════════════════════════
+     STEP 1: FORM LAPORAN
+  ════════════════════════════════════ */
+  return (
+    <>
+      {/* ─── Modal Kamera (render di atas segalanya) ─── */}
+      {showCamera && (
+        <CameraCapture
+          onPhotoTaken={handlePhotoTaken}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
+
+      {/* ─── Modal Preview Foto Besar ─── */}
+      {previewPhoto && (
+        <div
+          style={{ position:'fixed', inset:0, zIndex:9998, background:'rgba(0,0,0,0.92)', display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}
+          onClick={() => setPreviewPhoto(null)}
+        >
+          <div style={{ position:'relative', maxWidth:700, width:'100%' }} onClick={e => e.stopPropagation()}>
+            <img src={previewPhoto.blurred} alt="preview" style={{ width:'100%', borderRadius:16, display:'block' }} />
+            {previewPhoto.hasBlur && (
+              <div style={{ position:'absolute', top:12, left:12, background:'rgba(0,0,0,0.7)', borderRadius:20, padding:'6px 14px', fontSize:11, display:'flex', alignItems:'center', gap:6 }}>
+                <span>🛡</span>
+                <span style={{ color:'#4ade80', fontWeight:700 }}>Identitas disensor</span>
+              </div>
+            )}
+            <button
+              onClick={() => setPreviewPhoto(null)}
+              style={{ position:'absolute', top:12, right:12, background:'rgba(0,0,0,0.7)', border:'none', color:'#fff', borderRadius:'50%', width:32, height:32, cursor:'pointer', fontSize:16 }}>
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div style={{ maxWidth:620, margin:'0 auto', padding:'32px 20px' }}>
+        <div style={{ marginBottom:28 }}>
+          <div style={{ fontFamily:"'Syne',sans-serif", fontSize:24, fontWeight:800, marginBottom:8 }}>📝 Buat Laporan</div>
+          <div style={{ fontSize:13, color:'var(--text-muted)' }}>Isi formulir di bawah untuk melaporkan pekerja anak.</div>
+        </div>
+
+        {/* ─── Toggle Darurat ─── */}
+        <div
+          onClick={() => set('darurat', !form.darurat)}
+          style={{ background: form.darurat ? 'rgba(232,64,28,0.1)' : 'var(--surface)',
+            border: `1px solid ${form.darurat ? 'var(--accent)' : 'var(--border)'}`,
+            borderRadius:12, padding:'14px 18px', cursor:'pointer', transition:'all 0.2s', marginBottom:20,
+            display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div>
+            <div style={{ fontSize:13, fontWeight:700, color: form.darurat ? 'var(--accent)' : 'var(--text)' }}>
+              🚨 Situasi Darurat / Mendesak
+            </div>
+            <div style={{ fontSize:11, color:'var(--text-muted)', marginTop:2 }}>Aktifkan jika anak dalam bahaya langsung</div>
+          </div>
+          <div style={{ width:40, height:22, borderRadius:11, background: form.darurat ? 'var(--accent)' : 'var(--surface3)',
+            position:'relative', transition:'background 0.2s', flexShrink:0 }}>
+            <div style={{ position:'absolute', width:18, height:18, borderRadius:'50%', background:'#fff',
+              top:2, left: form.darurat ? 20 : 2, transition:'left 0.2s' }} />
+          </div>
+        </div>
+
+        {/* ─── Form Utama ─── */}
+        <div style={{ background:'var(--surface)', borderRadius:16, border:'1px solid var(--border)', padding:24, display:'flex', flexDirection:'column', gap:0 }}>
+
+          <div className="form-group">
+            <label className="form-label">Lokasi Kejadian *</label>
+            <select className="input" value={form.lokasi} onChange={e => set('lokasi', e.target.value)}>
+              <option value="">— Pilih lokasi —</option>
+              {LOKASI_OPTIONS.map(o => <option key={o}>{o}</option>)}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Alamat / Keterangan Lokasi</label>
+            <div style={{ display:'flex', gap:8 }}>
+              <input className="input" style={{ flex:1 }} placeholder="cth: Depan pintu masuk utama, dekat ATM..."
+                value={form.subLokasi} onChange={e => set('subLokasi', e.target.value)} />
+              <button className="btn btn-ghost btn-sm" onClick={getGPS} style={{ flexShrink:0 }}>
+                {gpsLoading ? '⏳' : '📍 GPS'}
+              </button>
+            </div>
+          </div>
+
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+            <div className="form-group">
+              <label className="form-label">Jenis Aktivitas</label>
+              <select className="input" value={form.jenis} onChange={e => set('jenis', e.target.value)}>
+                <option>Berjualan</option>
+                <option>Mengamen</option>
+                <option>Mengemis</option>
+                <option>Figuran / Kostum</option>
+                <option>Lainnya</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Perkiraan Jumlah Anak</label>
+              <input className="input" type="number" min={1} max={20} value={form.jumlah}
+                onChange={e => set('jumlah', +e.target.value)} />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Deskripsi Singkat</label>
+            <textarea className="input" rows={3}
+              placeholder="Ceritakan apa yang Anda lihat, ciri-ciri anak, situasi sekitar..."
+              value={form.deskripsi} onChange={e => set('deskripsi', e.target.value)}
+              style={{ resize:'vertical' }} />
+          </div>
+
+          {/* ════════════════════════════════════
+               SEKSI FOTO BUKTI — TAMBAHAN BARU
+          ════════════════════════════════════ */}
+          <div style={{ height:1, background:'var(--border)', margin:'8px 0 16px' }} />
+
+          <div style={{ marginBottom: 16 }}>
+            <label className="form-label" style={{ marginBottom: 8, display:'block' }}>
+              📸 Foto Bukti <span style={{ color:'var(--text-dim)', fontWeight:400 }}>(opsional, maks. 3 foto)</span>
+            </label>
+
+            {/* Banner perlindungan identitas */}
+            <div style={{
+              background:'rgba(59,130,246,0.08)',
+              border:'1px solid rgba(59,130,246,0.2)',
+              borderRadius:10, padding:'10px 14px', marginBottom:12,
+              display:'flex', gap:10, alignItems:'flex-start',
+            }}>
+              <span style={{ fontSize:18, flexShrink:0 }}>🛡️</span>
+              <div>
+                <div style={{ fontSize:12, fontWeight:700, color:'#60a5fa', marginBottom:2 }}>Perlindungan Identitas Anak</div>
+                <div style={{ fontSize:11, color:'var(--text-muted)', lineHeight:1.6 }}>
+                  Sesuai UU Perlindungan Anak, Anda <strong>wajib menyamarkan wajah</strong> anak sebelum mengirim foto.
+                  Setelah memotret, tandai area wajah untuk diblur secara manual.
+                </div>
+              </div>
+            </div>
+
+            {/* Grid foto yang sudah diambil */}
+            {photos.length > 0 && (
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:10, marginBottom:12 }}>
+                {photos.map((photo, idx) => (
+                  <div key={photo.id} style={{ position:'relative', aspectRatio:'4/3', borderRadius:10, overflow:'hidden', border:'1px solid var(--border)', cursor:'pointer' }}
+                    onClick={() => setPreviewPhoto(photo)}>
+                    <img src={photo.blurred} alt={`Foto ${idx+1}`}
+                      style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+
+                    {/* Badge status blur */}
+                    <div style={{
+                      position:'absolute', top:6, left:6,
+                      background: photo.hasBlur ? 'rgba(74,222,128,0.9)' : 'rgba(245,158,11,0.9)',
+                      borderRadius:20, padding:'2px 8px', fontSize:9, fontWeight:800,
+                      color: photo.hasBlur ? '#052e16' : '#451a03',
+                    }}>
+                      {photo.hasBlur ? `🛡 DISENSOR` : '⚠ BELUM DISENSOR'}
+                    </div>
+
+                    {/* Tombol hapus */}
+                    <button
+                      onClick={e => { e.stopPropagation(); removePhoto(photo.id) }}
+                      style={{ position:'absolute', top:6, right:6, width:24, height:24, borderRadius:'50%',
+                        background:'rgba(0,0,0,0.7)', border:'none', color:'#fff', cursor:'pointer', fontSize:12,
+                        display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      ✕
+                    </button>
+
+                    {/* Overlay nomor */}
+                    <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'rgba(0,0,0,0.5)',
+                      fontSize:10, textAlign:'center', padding:'3px 0', color:'rgba(255,255,255,0.7)' }}>
+                      Foto {idx+1} · Klik untuk besar
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Tombol ambil foto */}
+            {photos.length < 3 ? (
+              <button
+                type="button"
+                onClick={() => setShowCamera(true)}
+                style={{
+                  width:'100%', padding:'14px 20px', borderRadius:12,
+                  border:'2px dashed var(--border)',
+                  background:'transparent', color:'var(--text-muted)',
+                  cursor:'pointer', fontSize:13, fontWeight:600,
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                  transition:'all 0.2s',
+                }}
+                onMouseOver={e => { e.currentTarget.style.borderColor='var(--accent)'; e.currentTarget.style.color='var(--accent)' }}
+                onMouseOut={e => { e.currentTarget.style.borderColor='var(--border)'; e.currentTarget.style.color='var(--text-muted)' }}
+              >
+                <span style={{ fontSize:20 }}>📷</span>
+                <div style={{ textAlign:'left' }}>
+                  <div>{photos.length === 0 ? 'Ambil Foto Bukti' : `Tambah Foto (${photos.length}/3)`}</div>
+                  <div style={{ fontSize:11, fontWeight:400, marginTop:1 }}>Wajah anak akan disamarkan manual setelah foto diambil</div>
+                </div>
+              </button>
+            ) : (
+              <div style={{ textAlign:'center', fontSize:12, color:'var(--text-dim)', padding:'10px 0' }}>
+                ✓ Sudah mencapai batas maksimum 3 foto
+              </div>
+            )}
+
+            {/* Peringatan jika ada foto tanpa blur */}
+            {photos.some(p => !p.hasBlur) && (
+              <div style={{ marginTop:10, padding:'10px 14px', background:'rgba(245,158,11,0.1)',
+                border:'1px solid rgba(245,158,11,0.3)', borderRadius:10, fontSize:11, color:'#f59e0b', lineHeight:1.6 }}>
+                ⚠️ <strong>{photos.filter(p => !p.hasBlur).length} foto</strong> belum memiliki area yang disamarkan.
+                Klik foto untuk membuka dan menambahkan blur pada wajah anak.
+              </div>
+            )}
+          </div>
+          {/* ═══ akhir seksi foto ═══ */}
+
+          <div style={{ height:1, background:'var(--border)', margin:'8px 0 16px' }} />
+
+          <div className="form-group">
+            <label className="form-label">Nama Pelapor (opsional)</label>
+            <input className="input" placeholder="Nama Anda" disabled={form.anonymous}
+              value={form.pelapor} onChange={e => set('pelapor', e.target.value)}
+              style={{ opacity: form.anonymous ? 0.5 : 1 }} />
+          </div>
+
+          <label style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer', fontSize:13, marginBottom:20 }}>
+            <input type="checkbox" checked={form.anonymous} onChange={e => set('anonymous', e.target.checked)}
+              style={{ accentColor:'var(--accent)', width:16, height:16 }} />
+            Laporkan secara anonim (nama tidak ditampilkan)
+          </label>
+
+          <button className="btn btn-primary" onClick={submit}
+            style={{ justifyContent:'center', padding:'12px 0', fontSize:14 }}>
+            {loading ? '⏳ Mengirim...' : '📤 Kirim Laporan'}
+          </button>
+
+          <div style={{ fontSize:11, color:'var(--text-dim)', textAlign:'center', marginTop:12, lineHeight:1.6 }}>
+            Data laporan Anda akan dijaga kerahasiaannya dan hanya digunakan untuk keperluan perlindungan anak.
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
