@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import AdminLayout from './components/AdminLayout'
 import PublicLayout from './components/PublicLayout'
 import Toast from './components/Toast'
@@ -23,7 +23,7 @@ import './styles/globals.css'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/admin" replace />} />
 
@@ -49,6 +49,6 @@ export default function App() {
 
       <Toast />
       <Modal />
-    </BrowserRouter>
+    </HashRouter>
   )
 }
