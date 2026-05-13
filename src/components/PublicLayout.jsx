@@ -15,6 +15,7 @@ const MOBILE_NAV = [
   { to:'/public/laporan', icon:'📝', label:'Laporkan' },
   { to:'/public/riwayat', icon:'📋', label:'Riwayat' },
   { to:'/public/peta',    icon:'🗺️', label:'Peta' },
+  { to:'/public/tentang',    icon:'ℹ️', label:'Tentang' },
 ]
 
 export default function PublicLayout() {
