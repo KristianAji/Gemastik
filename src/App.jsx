@@ -23,17 +23,32 @@ import './styles/globals.css'
 
 export default function App() {
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#0B1F3A',
-      color: 'white',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      fontSize: '40px',
-      fontWeight: 'bold'
-    }}>
-      DELCION BERHASIL
-    </div>
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/admin" replace />} />
+
+        {/* Admin */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminBeranda />} />
+          <Route path="cctv"       element={<AdminCCTV />} />
+          <Route path="peta"       element={<AdminPeta />} />
+          <Route path="notifikasi" element={<AdminNotifikasi />} />
+          <Route path="laporan"    element={<AdminLaporan />} />
+          <Route path="statistik"  element={<AdminStatistik />} />
+        </Route>
+
+        {/* Public */}
+        <Route path="/public" element={<PublicLayout />}>
+          <Route index element={<PubBeranda />} />
+          <Route path="laporan"  element={<PubLaporan />} />
+          <Route path="riwayat"  element={<PubRiwayat />} />
+          <Route path="peta"     element={<PubPeta />} />
+          <Route path="tentang"  element={<PubTentang />} />
+        </Route>
+      </Routes>
+
+      <Toast />
+      <Modal />
+    </HashRouter>
   )
 }
