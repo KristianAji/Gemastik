@@ -10,6 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico'],
+
       manifest: {
         name: 'Delcion — PantauAnak Manado',
         short_name: 'Delcion',
@@ -17,11 +18,7 @@ export default defineConfig({
         theme_color: '#0B1F3A',
         background_color: '#0B1F3A',
         display: 'standalone',
-        orientation: 'portrait-primary',
-        icons: [
-          { src: '/Gemastik/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/Gemastik/icon-512.png', sizes: '512x512', type: 'image/png' }
-        ]
+        orientation: 'portrait-primary'
       }
     })
   ]
