@@ -15,13 +15,21 @@ const MOBILE_NAV = [
   { to:'/public/laporan', icon:'📝', label:'Laporkan' },
   { to:'/public/riwayat', icon:'📋', label:'Riwayat' },
   { to:'/public/peta',    icon:'🗺️', label:'Peta' },
-  { to:'/public/tentang',    icon:'ℹ️', label:'Tentang' },
+  { to:'/public/tentang', icon:'ℹ️', label:'Tentang' },
 ]
 
 export default function PublicLayout() {
   const navigate = useNavigate()
   const setRole  = useStore(s => s.setRole)
+  const user     = useStore(s => s.user)
+  const logout   = useStore(s => s.logout)
+
   useEffect(() => { setRole('public') }, [])
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background:'var(--bg)' }}>
@@ -33,7 +41,7 @@ export default function PublicLayout() {
       }}>
         <div style={{ display:'flex', alignItems:'center', gap:16 }}>
 
-          {/* Logo — sama persis dengan AdminLayout */}
+          {/* Logo */}
           <div style={{
             fontFamily:"'Poppins', sans-serif",
             fontSize:22,
@@ -63,32 +71,69 @@ export default function PublicLayout() {
           </nav>
         </div>
 
-        {/* Role switch — sama dengan AdminLayout */}
+        {/* Kanan: Info user + Keluar */}
         <div style={{
-          display:'flex', gap:4,
-          background:'var(--surface2)',
-          borderRadius:12, padding:'4px',
-          border:'1px solid var(--border)'
+          display:'flex',
+          alignItems:'center',
+          gap:12
         }}>
+
+          {/* Info user yang login (desktop) */}
+          {user && (
+            <div style={{
+              display:'flex',
+              alignItems:'center',
+              gap:8
+            }} className="pub-desktop-nav">
+              <div style={{
+                width:30,
+                height:30,
+                borderRadius:'50%',
+                background:'rgba(232,64,28,0.12)',
+                border:'1px solid rgba(232,64,28,0.25)',
+                display:'flex',
+                alignItems:'center',
+                justifyContent:'center',
+                fontSize:14
+              }}>
+                {user.avatar}
+              </div>
+              <div style={{
+                fontSize:12,
+                fontWeight:600,
+                color:'var(--text-muted)'
+              }}>
+                {user.nama}
+              </div>
+            </div>
+          )}
+
+          {/* Tombol Keluar */}
           <button
-            onClick={() => navigate('/public')}
+            onClick={handleLogout}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(232,64,28,0.1)'
+              e.currentTarget.style.color = '#ff7a5a'
+              e.currentTarget.style.borderColor = 'rgba(232,64,28,0.3)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+              e.currentTarget.style.color = 'rgba(255,255,255,0.4)'
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
+            }}
             style={{
-              padding:'6px 15px', borderRadius:8, border:'none',
-              background:'var(--accent)', color:'#fff',
-              fontSize:12, fontWeight:600, fontFamily:'Inter, sans-serif',
-              transition:'0.2s ease'
+              padding:'7px 14px',
+              borderRadius:8,
+              border:'1px solid rgba(255,255,255,0.1)',
+              background:'rgba(255,255,255,0.04)',
+              color:'rgba(255,255,255,0.4)',
+              fontSize:12,
+              fontWeight:600,
+              fontFamily:'inherit',
+              cursor:'pointer',
+              transition:'all 0.2s'
             }}>
-            👥 Masyarakat
-          </button>
-          <button
-            onClick={() => navigate('/admin')}
-            style={{
-              padding:'6px 15px', borderRadius:8, border:'none',
-              background:'transparent', color:'var(--text-muted)',
-              fontSize:12, fontWeight:600, fontFamily:'Inter, sans-serif',
-              transition:'0.2s ease'
-            }}>
-            🛡️ Admin
+            Keluar
           </button>
         </div>
       </header>
