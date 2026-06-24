@@ -28,7 +28,7 @@ export default function App() {
     <HashRouter>
       <Routes>
         {/* Root → halaman login */}
-        <Route path="/"      element={<Navigate to="/login" replace />} />
+        <Route path="/"      element={<Navigate to="/public" replace />} />
         <Route path="/login" element={<Login />} />
 
         {/* ── Admin (hanya role 'admin') ── */}
@@ -49,14 +49,8 @@ export default function App() {
         </Route>
 
         {/* ── Public (hanya role 'public') ── */}
-        <Route
-          path="/public"
-          element={
-            <ProtectedRoute requiredRole="public">
-              <PublicLayout />
-            </ProtectedRoute>
-          }
-        >
+        // SESUDAH
+          <Route path="/public" element={<PublicLayout />}>
           <Route index         element={<PubBeranda />} />
           <Route path="laporan"  element={<PubLaporan />} />
           <Route path="riwayat"  element={<PubRiwayat />} />

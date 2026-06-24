@@ -1,11 +1,10 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { useStore } from '../store/useStore'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 const NAV = [
-  { to:'/public',          label:'Beranda',      exact:true },
+  { to:'/public',          label:'Beranda',        exact:true },
   { to:'/public/laporan',  label:'Buat Laporan' },
-  { to:'/public/riwayat',  label:'Riwayat Saya' },
+  { to:'/public/riwayat',  label:'Riwayat' },
   { to:'/public/peta',     label:'Peta Laporan' },
   { to:'/public/tentang',  label:'Tentang' },
 ]
@@ -19,135 +18,90 @@ const MOBILE_NAV = [
 ]
 
 export default function PublicLayout() {
-  const navigate = useNavigate()
-  const setRole  = useStore(s => s.setRole)
-  const user     = useStore(s => s.user)
-  const logout   = useStore(s => s.logout)
+  const [scrolled, setScrolled] = useState(false)
 
-  useEffect(() => { setRole('public') }, [])
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background:'var(--bg)' }}>
-      {/* Header */}
+    <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background:'#E1E5F2' }}>
+
+      {/* ── Navbar ── */}
       <header style={{
-        background:'var(--surface)', borderBottom:'1px solid var(--border)',
-        padding:'0 24px', height:56, display:'flex', alignItems:'center', justifyContent:'space-between',
-        position:'sticky', top:0, zIndex:100,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 200,
+        height: 56,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 32px',
+        // Liquid glass saat scroll, transparan saat di atas
+        background: scrolled
+          ? 'rgba(255, 255, 255, 0.18)'
+          : 'transparent',
+        backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
+        borderBottom: scrolled
+          ? '1px solid rgba(255, 255, 255, 0.25)'
+          : '1px solid transparent',
+        boxShadow: scrolled
+          ? '0 2px 20px rgba(2, 43, 58, 0.08)'
+          : 'none',
+        transition: 'background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
       }}>
-        <div style={{ display:'flex', alignItems:'center', gap:16 }}>
-
-          {/* Logo */}
-          <div style={{
-            fontFamily:"'Poppins', sans-serif",
-            fontSize:22,
-            fontWeight:100,
-            letterSpacing:'-0.04em',
-            lineHeight:1,
-            color:'var(--text)'
-          }}>
-            Del<span style={{ color:'var(--accent)' }}>cion</span>
-          </div>
-
-          <nav style={{ display:'flex', gap:2 }} className="pub-desktop-nav">
-            {NAV.map(n => (
-              <NavLink key={n.to} to={n.to} end={n.exact}
-                style={({ isActive }) => ({
-                  padding:'6px 14px', borderRadius:8,
-                  fontSize:13,
-                  fontWeight: isActive ? 600 : 500,
-                  fontFamily:'Inter, sans-serif',
-                  color: isActive ? 'var(--text)' : 'var(--text-muted)',
-                  background: isActive ? 'var(--surface2)' : 'transparent',
-                  transition:'all 0.18s ease',
-                })}>
-                {n.label}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-
-        {/* Kanan: Info user + Keluar */}
-        <div style={{
-          display:'flex',
-          alignItems:'center',
-          gap:12
-        }}>
-
-          {/* Info user yang login (desktop) */}
-          {user && (
-            <div style={{
-              display:'flex',
-              alignItems:'center',
-              gap:8
-            }} className="pub-desktop-nav">
-              <div style={{
-                width:30,
-                height:30,
-                borderRadius:'50%',
-                background:'rgba(232,64,28,0.12)',
-                border:'1px solid rgba(232,64,28,0.25)',
-                display:'flex',
-                alignItems:'center',
-                justifyContent:'center',
-                fontSize:14
-              }}>
-                {user.avatar}
-              </div>
-              <div style={{
-                fontSize:12,
-                fontWeight:600,
-                color:'var(--text-muted)'
-              }}>
-                {user.nama}
-              </div>
-            </div>
-          )}
-
-          {/* Tombol Keluar */}
-          <button
-            onClick={handleLogout}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(232,64,28,0.1)'
-              e.currentTarget.style.color = '#ff7a5a'
-              e.currentTarget.style.borderColor = 'rgba(232,64,28,0.3)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
-              e.currentTarget.style.color = 'rgba(255,255,255,0.4)'
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
-            }}
-            style={{
-              padding:'7px 14px',
-              borderRadius:8,
-              border:'1px solid rgba(255,255,255,0.1)',
-              background:'rgba(255,255,255,0.04)',
-              color:'rgba(255,255,255,0.4)',
-              fontSize:12,
-              fontWeight:600,
-              fontFamily:'inherit',
-              cursor:'pointer',
-              transition:'all 0.2s'
-            }}>
-            Keluar
-          </button>
-        </div>
+        <nav style={{ display:'flex', gap:4, alignItems:'center' }}>
+          {NAV.map(n => (
+            <NavLink
+              key={n.to}
+              to={n.to}
+              end={n.exact}
+              style={({ isActive }) => ({
+                padding: '7px 16px',
+                borderRadius: 8,
+                fontSize: 13,
+                fontWeight: isActive ? 700 : 500,
+                fontFamily: "'Inter', sans-serif",
+                // Teks putih saat di atas foto, navy saat glass
+                color: isActive
+                  ? (scrolled ? '#022B3A' : '#FFFFFF')
+                  : (scrolled ? 'rgba(2,43,58,0.65)' : 'rgba(255,255,255,0.8)'),
+                background: isActive
+                  ? (scrolled ? 'rgba(2,43,58,0.08)' : 'rgba(255,255,255,0.15)')
+                  : 'transparent',
+                transition: 'all 0.2s ease',
+                textDecoration: 'none',
+              })}
+            >
+              {n.label}
+            </NavLink>
+          ))}
+        </nav>
       </header>
 
-      <main style={{ flex:1, paddingBottom:80 }}>
+      {/* ── Konten halaman ── */}
+      {/* padding-top 0 karena hero di Beranda sudah fullscreen dan navbar fixed di atasnya.
+          Halaman lain (Peta, Tentang, dll) perlu padding-top agar tidak tertutup navbar. */}
+      <main style={{ flex:1, paddingBottom: 80 }}>
         <Outlet />
       </main>
 
-      {/* Mobile bottom nav */}
+      {/* ── Mobile bottom nav ── */}
       <nav className="mobile-nav">
         <div className="mobile-nav-items">
           {MOBILE_NAV.map(n => (
-            <NavLink key={n.to} to={n.to} end={n.exact}
-              className={({ isActive }) => `mobile-nav-item${isActive ? ' active' : ''}`}>
+            <NavLink
+              key={n.to}
+              to={n.to}
+              end={n.exact}
+              className={({ isActive }) => `mobile-nav-item${isActive ? ' active' : ''}`}
+            >
               <span className="icon">{n.icon}</span>
               <span>{n.label}</span>
             </NavLink>
@@ -156,7 +110,12 @@ export default function PublicLayout() {
       </nav>
 
       <style>{`
-        @media (max-width: 768px) { .pub-desktop-nav { display: none !important; } }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+        /* Sembunyikan desktop nav di mobile */
+        @media (max-width: 768px) {
+          header nav { display: none !important; }
+        }
       `}</style>
     </div>
   )
