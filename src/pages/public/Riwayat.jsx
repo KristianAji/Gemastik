@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
+import FooterPublic from '../../components/FooterPublic'
+
 
 // ─── Mengikuti token desain PubBuatLaporan ──────────────────────────────────
 // Palette: #022B3A (navy), #1F7A8C (teal), #BFDBF7 (biru muda), #E1E5F2 (abu kebiruan), #FFFFFF
@@ -550,7 +552,8 @@ export default function PubRiwayat() {
 
           </div>
         </section>
-
+        <FooterPublic />
+        
       </div>
     </>
   )

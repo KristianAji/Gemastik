@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import FooterPublic from '../../components/FooterPublic'
+
 
 const REGULASI = [
   {
@@ -954,6 +956,8 @@ export default function PubTentang() {
           )}
 
         </div>
+        <FooterPublic />
+        
       </div>
     </>
   )

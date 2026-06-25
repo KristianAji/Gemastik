@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
 import CameraCapture from '../../components/camera/CameraCapture'
+import FooterPublic from '../../components/FooterPublic'
 
 const LOKASI_OPTIONS = [
   'Kawasan Megamas','Pasar 45','Jl. Boulevard','Manado Town Square',
@@ -125,6 +126,7 @@ export default function PubBuatLaporan() {
 
   const [step, setStep]       = useState(1)
   const [loading, setLoading] = useState(false)
+  const [laporanId, setLaporanId] = useState('')
   const [gpsLoading, setGpsLoading] = useState(false)
 
   const [showCamera, setShowCamera]     = useState(false)
@@ -172,6 +174,8 @@ export default function PubBuatLaporan() {
     if (!form.lokasi) { showToast('Mohon pilih lokasi kejadian', 'var(--amber)'); return }
     setLoading(true)
     setTimeout(() => {
+      const newId = `LP-${Date.now().toString().slice(-6)}`
+      setLaporanId(newId)
       tambahLaporan({
         ...form,
         sumber: form.anonymous ? 'Anonim' : (form.pelapor || 'Warga'),
@@ -626,6 +630,7 @@ export default function PubBuatLaporan() {
                 <div className="sukses-card-header">Ringkasan Laporan</div>
                 <div className="sukses-card-body">
                   {[
+                    ['disaMarkan', `#${laporanId}`],
                     ['Lokasi', form.lokasi],
                     ['Jenis Aktivitas', form.jenis],
                     ['Jumlah Anak', `${form.jumlah} orang`],
@@ -803,7 +808,7 @@ export default function PubBuatLaporan() {
                       </svg>
                       <div>
                         <div>{photos.length === 0 ? 'Ambil Foto Bukti' : `Tambah Foto (${photos.length}/3)`}</div>
-                        <div className="btn-tambah-foto-sub">Wajah anak akan disaMarkan otomatis setelah foto diambil</div>
+                        <div className="btn-tambah-foto-sub">Wajah anak akan disamarkan otomatis setelah foto diambil</div>
                       </div>
                     </button>
                   ) : (
@@ -854,6 +859,9 @@ export default function PubBuatLaporan() {
             </>
           )}
         </div>
+        
+        <FooterPublic />
+        
       </div>
     </>
   )

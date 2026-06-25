@@ -88,7 +88,7 @@ export default function PublicLayout() {
       {/* ── Konten halaman ── */}
       {/* padding-top 0 karena hero di Beranda sudah fullscreen dan navbar fixed di atasnya.
           Halaman lain (Peta, Tentang, dll) perlu padding-top agar tidak tertutup navbar. */}
-      <main style={{ flex:1, paddingBottom: 80 }}>
+      <main style={{ flex:1 }}>
         <Outlet />
       </main>
 

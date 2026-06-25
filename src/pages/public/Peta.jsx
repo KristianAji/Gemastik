@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
+import FooterPublic from '../../components/FooterPublic'
+
 
 const PINS = [
   { x:120, y:220, label:'Kawasan Megamas',   desc:'2 anak berjualan', time:'14 mnt', status:'baru',   color:'#E8401C' },
@@ -408,6 +410,8 @@ export default function PubPeta() {
           </div>
 
         </div>
+        <FooterPublic />
+        
       </div>
     </>
   )

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
+import FooterPublic from '../../components/FooterPublic'
 
 // ─── Warna & token desain ───────────────────────────────────────────────────
 // Palette: #022B3A (navy), #1F7A8C (teal), #BFDBF7 (biru muda), #E1E5F2 (abu kebiruan), #FFFFFF
@@ -474,16 +475,6 @@ export default function PubBeranda() {
           line-height: 1.5;
         }
 
-        .footer-bottom {
-          max-width: 1200px;
-          margin: 0 auto;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: 12px;
-          color: rgba(191, 219, 247, 0.35);
-        }
-
         /* ── Responsif ── */
         @media (max-width: 768px) {
           .hero-content {
@@ -681,75 +672,9 @@ export default function PubBeranda() {
         {/* ══════════════════════════════════════
             SECTION 4 — FOOTER
         ══════════════════════════════════════ */}
-        <footer className="footer-section">
-          <div className="footer-grid">
-
-            {/* Kolom 1: Tentang */}
-            <div>
-              <div className="footer-logo">Del<span>cion</span></div>
-              <p className="footer-desc">
-                Platform pemantauan dan pelaporan
-                pekerja anak berbasis masyarakat,
-                CCTV, dan koordinasi lapangan.
-              </p>
-            </div>
-
-            {/* Kolom 2: Navigasi */}
-            <div>
-              <div className="footer-heading">Navigasi</div>
-              {[
-                { label: 'Beranda', path: '/public' },
-                { label: 'Buat Laporan', path: '/public/laporan' },
-                { label: 'Riwayat Laporan', path: '/public/riwayat' },
-                { label: 'Peta Laporan', path: '/public/peta' },
-                { label: 'Tentang & Regulasi', path: '/public/tentang' },
-              ].map(l => (
-                <button key={l.label} className="footer-link" onClick={() => navigate(l.path)}>
-                  {l.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Kolom 3: Kontak */}
-            <div>
-              <div className="footer-heading">Kontak & Bantuan</div>
-              <div className="footer-kontak-item">
-                
-                <div>
-                  <div style={{ fontWeight: 600, color: '#BFDBF7' }}>Hotline DP3A Manado</div>
-                  <div>(0431) 864-xxx</div>
-                </div>
-              </div>
-              <div className="footer-kontak-item">
-              
-                <div>
-                  <div style={{ fontWeight: 600, color: '#BFDBF7' }}>SAPA Kemsos</div>
-                  <div>129</div>
-                </div>
-              </div>
-              <div className="footer-kontak-item">
-                
-                <div>
-                  <div style={{ fontWeight: 600, color: '#BFDBF7' }}>Email Pengaduan</div>
-                  <div>dp3a@manadokota.go.id</div>
-                </div>
-              </div>
-              <div className="footer-kontak-item">
-            
-                <div>
-                  <div style={{ fontWeight: 600, color: '#BFDBF7' }}>Darurat</div>
-                  <div>112</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="footer-bottom">
-            <span>© 2026 Delcion: Atas Nama Delon</span>
-            <span>Gemastik 2026 Universitas Sam Ratulangi</span>
-          </div>
-        </footer>
-
+        
+        <FooterPublic />
+        
       </div>
     </>
   )
