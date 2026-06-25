@@ -206,7 +206,7 @@ export default function Login() {
         textTransform: 'uppercase', marginBottom: 32, position: 'relative', zIndex: 1,
         textAlign: 'center',
       }}>
-        PantauAnak Manado — Sistem Perlindungan Anak
+        Pantau Anak Manado — Sistem Perlindungan Anak
       </div>
 
       {/* Card */}
