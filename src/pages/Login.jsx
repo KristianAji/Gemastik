@@ -1,47 +1,203 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore, ACCOUNTS } from '../store/useStore'
 
-// ── Sub-komponen kecil ────────────────────────────────────
+// ── Palette ──────────────────────────────────────────────
+// #F4F7F9  background utama
+// #FFFFFF  surface / card
+// #284B63  navy primary
+// #3C6E71  teal accent
+// #353535  text utama
+// #6B7C8D  text muted
+// #D9D9D9  border
+// ─────────────────────────────────────────────────────────
 
-function FieldLabel({ children }) {
+// ── Ikon SVG (pengganti emoji) ────────────────────────────
+function IconEye({ size = 18, color = '#6B7C8D' }) {
   return (
-    <div style={{
-      fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-      letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', marginBottom: 7,
-    }}>
-      {children}
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  )
+}
+
+function IconEyeOff({ size = 18, color = '#6B7C8D' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+  )
+}
+
+// ── Animated background blobs ─────────────────────────────
+function AnimatedBackground() {
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 0, overflow: 'hidden', background:
+'linear-gradient(180deg, #284B63 0%, #315874 18%, #4F7691 40%, #82A3BD 65%, #D8E5EF 88%, #FFFFFF 100%)' }}>
+      <style>{`
+        @keyframes float1 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33%       { transform: translate(40px, -30px) scale(1.05); }
+          66%       { transform: translate(-20px, 20px) scale(0.97); }
+        }
+        @keyframes float2 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33%       { transform: translate(-50px, 30px) scale(1.08); }
+          66%       { transform: translate(30px, -20px) scale(0.95); }
+        }
+        @keyframes float3 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50%       { transform: translate(20px, 40px) scale(1.04); }
+        }
+      `}</style>
+
+      {/* Blob 1 — navy biru di kiri atas */}
+      <div style={{
+        position: 'absolute',
+        width: 700, height: 700,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(255,255,255,.20) 0%, transparent 72%)',
+        top: -200, left: -150,
+        animation: 'float1 12s ease-in-out infinite',
+      }} />
+
+      {/* Blob 2 — teal di kanan bawah */}
+      <div style={{
+        position: 'absolute',
+        width: 600, height: 600,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(191,219,247,.28) 0%, transparent 72%)',
+        bottom: -180, right: -100,
+        animation: 'float2 15s ease-in-out infinite',
+      }} />
+
+      {/* Blob 3 — aksen biru muda di tengah kanan */}
+      <div style={{
+        position: 'absolute',
+        width: 400, height: 400,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(255,255,255,.24) 0%, transparent 70%)',
+        top: '40%', right: '10%',
+        animation: 'float3 10s ease-in-out infinite',
+      }} />
+
+      {/* Blob 4 — kecil di kiri bawah */}
+      <div style={{
+        position: 'absolute',
+        width: 300, height: 300,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(191,219,247,.20) 0%, transparent 70%)',
+        bottom: '15%', left: '5%',
+        animation: 'float1 18s ease-in-out infinite reverse',
+      }} />
     </div>
   )
 }
 
-function FieldInput({ style, ...props }) {
-  const [focused, setFocused] = useState(false)
+// ── GlowBox: wrapper dengan efek hover glow + timbul ──────
+function GlowBox({
+  children,
+  style,
+  animated = false,
+  accentColor = '#3C6E71'
+}) {
+
+  const [hovered, setHovered] = useState(false)
+
   return (
-    <input
-      {...props}
-      onFocus={e => { setFocused(true); props.onFocus?.(e) }}
-      onBlur={e => { setFocused(false); props.onBlur?.(e) }}
+    <div
+      onMouseEnter={() => animated && setHovered(true)}
+      onMouseLeave={() => animated && setHovered(false)}
       style={{
-        width: '100%',
-        background: 'rgba(255,255,255,0.06)',
-        border: `1px solid ${focused ? 'rgba(232,64,28,0.55)' : 'rgba(255,255,255,0.1)'}`,
-        borderRadius: 10,
-        padding: '12px 14px',
-        color: '#e8eef8',
-        fontSize: 14,
-        fontFamily: 'inherit',
-        outline: 'none',
-        marginBottom: 16,
-        transition: 'border-color 0.2s',
+        background: 'rgba(255,255,255,.28)',        
+        backdropFilter: 'blur(28px) saturate(190%)',
+        WebkitBackdropFilter: 'blur(28px) saturate(190%)',
+
+        border: animated
+          ? `1px solid ${
+              hovered
+                ? accentColor + '55'
+                : 'rgba(217,217,217,0.6)'
+            }`
+          : '1px solid rgba(255,255,255,.28)',
+
+        borderRadius: 16,
+
+        boxShadow: animated
+          ? hovered
+            ? `0 8px 32px rgba(40,75,99,.13),
+               0 0 0 1px ${accentColor}33`
+            : '0 2px 16px rgba(40,75,99,.07)'
+          : '0 2px 16px rgba(40,75,99,.07)',
+
+        transform:
+          animated && hovered
+            ? 'translateY(-2px)'
+            : 'translateY(0)',
+
+        transition:
+          animated
+            ? 'all .25s cubic-bezier(.22,1,.36,1)'
+            : 'none',
+
         ...style,
       }}
-    />
+    >
+      {children}
+    </div>
+  )
+}
+// ── Input field ───────────────────────────────────────────
+function FieldInput({ label, style, ...props }) {
+  const [focused, setFocused] = useState(false)
+  return (
+    <div style={{ marginBottom: 16 }}>
+      {label && (
+        <div style={{
+          fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+          letterSpacing: '0.08em', color: '#6B7C8D', marginBottom: 7,
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+        }}>
+          {label}
+        </div>
+      )}
+      <input
+        {...props}
+        onFocus={e => { setFocused(true); props.onFocus?.(e) }}
+        onBlur={e => { setFocused(false); props.onBlur?.(e) }}
+        style={{
+          width: '100%',
+          background:
+            focused
+            ? 'rgba(255,255,255,.75)'
+            : 'rgba(255,255,255,.22)',
+          border: `1.5px solid ${
+                  focused
+                  ? '#BFDBF7'
+                  : 'rgba(255,255,255,.25)'
+                  }`,
+          borderRadius: 10,
+          padding: '11px 14px',
+          color: '#353535',
+          fontSize: 14,
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          outline: 'none',
+          transition: 'all 0.2s ease',
+          boxShadow: focused ? '0 0 0 3px rgba(60,110,113,0.10)' : 'none',
+          boxSizing: 'border-box',
+          ...style,
+        }}
+      />
+    </div>
   )
 }
 
-// ── Form Registrasi Masyarakat ────────────────────────────
-
+// ── Form Registrasi ───────────────────────────────────────
 function RegisterForm({ onBack, onSuccess }) {
   const [nama,  setNama]  = useState('')
   const [hp,    setHp]    = useState('')
@@ -55,65 +211,52 @@ function RegisterForm({ onBack, onSuccess }) {
     if (!nama || !hp || !email || !pass) return setError('Mohon lengkapi semua data.')
     if (pass.length < 8)                 return setError('Password minimal 8 karakter.')
     if (!/\S+@\S+\.\S+/.test(email))    return setError('Format email tidak valid.')
-
-    // Di produksi: POST ke backend → simpan akun baru
     setOk(true)
     setTimeout(() => onSuccess(email), 1600)
   }
 
   return (
     <div>
-      <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 18, color: 'var(--text)' }}>
-        Daftar Akun Masyarakat
+      <div style={{
+        fontSize: 15, fontWeight: 700, marginBottom: 20,
+        color: '#284B63', fontFamily: "'Plus Jakarta Sans', sans-serif",
+      }}>
+        Daftar Akun
       </div>
 
       {ok && (
         <div style={{
-          background: 'rgba(46,204,113,0.1)', border: '1px solid rgba(46,204,113,0.25)',
-          borderRadius: 8, padding: '10px 14px', fontSize: 12, color: 'var(--green)',
-          marginBottom: 14, textAlign: 'center',
+          background: 'rgba(60,110,113,0.08)', border: '1px solid rgba(60,110,113,0.25)',
+          borderRadius: 8, padding: '10px 14px', fontSize: 12,
+          color: '#3C6E71', marginBottom: 14, textAlign: 'center',
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
         }}>
-          ✓ Akun berhasil dibuat! Mengalihkan ke form login…
+          Akun berhasil dibuat! Mengalihkan ke login…
         </div>
       )}
 
       {error && (
         <div style={{
-          background: 'rgba(232,64,28,0.1)', border: '1px solid rgba(232,64,28,0.25)',
-          borderRadius: 8, padding: '9px 12px', fontSize: 12, color: '#ff7a5a', marginBottom: 14,
+          background: 'rgba(40,75,99,0.06)', border: '1px solid rgba(40,75,99,0.2)',
+          borderRadius: 8, padding: '9px 12px', fontSize: 12,
+          color: '#284B63', marginBottom: 14,
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
         }}>
           {error}
         </div>
       )}
 
-      <FieldLabel>Nama Lengkap</FieldLabel>
-      <FieldInput value={nama}  onChange={e => setNama(e.target.value)}  placeholder="nama lengkap Anda" />
+      <FieldInput label="Nama Lengkap"     value={nama}  onChange={e => setNama(e.target.value)}  placeholder="Nama lengkap Anda" />
+      <FieldInput label="No. HP / WhatsApp" type="tel"   value={hp}    onChange={e => setHp(e.target.value)}    placeholder="08xxxxxxxxxx" />
+      <FieldInput label="Email"             type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@contoh.com" />
+      <FieldInput label="Password"          type="password" value={pass} onChange={e => setPass(e.target.value)} placeholder="min. 8 karakter" />
 
-      <FieldLabel>No. HP / WhatsApp</FieldLabel>
-      <FieldInput type="tel" value={hp} onChange={e => setHp(e.target.value)} placeholder="08xxxxxxxxxx" />
-
-      <FieldLabel>Email</FieldLabel>
-      <FieldInput type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@contoh.com" />
-
-      <FieldLabel>Password</FieldLabel>
-      <FieldInput
-        type="password" value={pass} onChange={e => setPass(e.target.value)}
-        placeholder="min. 8 karakter"
-        onKeyDown={e => e.key === 'Enter' && submit()}
-      />
-
-      <button onClick={submit} style={{
-        width: '100%', background: 'var(--accent)', color: '#fff', border: 'none',
-        borderRadius: 11, padding: 13, fontSize: 14, fontWeight: 700,
-        fontFamily: 'inherit', cursor: 'pointer',
-      }}>
-        Daftar Sekarang
-      </button>
+      <GlowButton onClick={submit} style={{ marginBottom: 8 }}>Daftar Sekarang</GlowButton>
 
       <button onClick={onBack} style={{
         width: '100%', background: 'transparent', border: 'none',
-        color: 'rgba(255,255,255,0.3)', fontSize: 12, marginTop: 10,
-        cursor: 'pointer', fontFamily: 'inherit', padding: 6,
+        background:'rgba(255,255,255,.20)', fontSize: 12, marginTop: 4,
+        cursor: 'pointer', fontFamily: "'Plus Jakarta Sans', sans-serif", padding: 6,
       }}>
         ← Kembali ke Login
       </button>
@@ -121,8 +264,44 @@ function RegisterForm({ onBack, onSuccess }) {
   )
 }
 
-// ── Halaman Login Utama ───────────────────────────────────
+// ── Tombol utama dengan glow ──────────────────────────────
+function GlowButton({ children, onClick, disabled, style }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        width: '100%',
+        background: disabled
+          ? '#9BB5C0'
+          : hovered
+            ? '#284B63'
+            : '#3C6E71',
+        color: '#FFFFFF',
+        border: 'none',
+        borderRadius: 11,
+        padding: '13px 0',
+        fontSize: 14,
+        fontWeight: 700,
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        transform: hovered && !disabled ? 'translateY(-1px)' : 'translateY(0)',
+        boxShadow: hovered && !disabled
+          ? '0 6px 20px rgba(60,110,113,0.30)'
+          : '0 2px 8px rgba(60,110,113,0.15)',
+        transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
+        ...style,
+      }}
+    >
+      {children}
+    </button>
+  )
+}
 
+// ── Halaman Login Utama ───────────────────────────────────
 export default function Login() {
   const navigate = useNavigate()
   const login    = useStore(s => s.login)
@@ -139,7 +318,6 @@ export default function Login() {
     if (!email.trim()) return setError('Mohon masukkan email.')
     if (!pass)         return setError('Mohon masukkan password.')
 
-    // Role ditentukan otomatis dari email — tidak perlu dipilih manual
     const akun = ACCOUNTS.find(
       a => a.email === email.trim().toLowerCase() && a.password === pass
     )
@@ -170,147 +348,184 @@ export default function Login() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#060f1c',
-      padding: '32px 20px',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      {/* Ambient blobs */}
-      <div style={{
-        position: 'absolute', width: 600, height: 600, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(232,64,28,0.06) 0%, transparent 70%)',
-        top: -200, left: -120, pointerEvents: 'none',
-      }} />
-      <div style={{
-        position: 'absolute', width: 400, height: 400, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(59,143,232,0.05) 0%, transparent 70%)',
-        bottom: -100, right: -80, pointerEvents: 'none',
-      }} />
-
-      {/* Logo */}
-      <div style={{
-        fontFamily: "'Poppins', sans-serif", fontSize: 34, fontWeight: 100,
-        letterSpacing: '-0.04em', lineHeight: 1, marginBottom: 8,
-        position: 'relative', zIndex: 1,
-      }}>
-        Del<span style={{ color: 'var(--accent)' }}>cion</span>
-      </div>
-      <div style={{
-        fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em',
-        textTransform: 'uppercase', marginBottom: 32, position: 'relative', zIndex: 1,
-        textAlign: 'center',
-      }}>
-        Pantau Anak Manado — Sistem Perlindungan Anak
-      </div>
-
-      {/* Card */}
-      <div style={{
-        background: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgba(255,255,255,0.09)',
-        borderRadius: 20, padding: '28px 28px 24px',
-        width: '100%', maxWidth: 400,
-        position: 'relative', zIndex: 1,
-      }}>
-        {showReg ? (
-          <RegisterForm
-            onBack={() => setShowReg(false)}
-            onSuccess={handleRegisterSuccess}
-          />
-        ) : (
-          <>
-            {/* Error */}
-            {error && (
-              <div style={{
-                background: 'rgba(232,64,28,0.1)', border: '1px solid rgba(232,64,28,0.25)',
-                borderRadius: 8, padding: '9px 12px', fontSize: 12,
-                color: '#ff7a5a', marginBottom: 16,
-              }}>
-                ⚠ {error}
-              </div>
-            )}
-
-            <FieldLabel>Email</FieldLabel>
-            <FieldInput
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="masukkan email Anda"
-              autoComplete="email"
-            />
-
-            <FieldLabel>Password</FieldLabel>
-            <div style={{ position: 'relative', marginBottom: 20 }}>
-              <FieldInput
-                type={showPass ? 'text' : 'password'}
-                value={pass}
-                onChange={e => setPass(e.target.value)}
-                placeholder="••••••••"
-                style={{ marginBottom: 0, paddingRight: 44 }}
-                onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              />
-              <button
-                onClick={() => setShowPass(v => !v)}
-                style={{
-                  position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  color: 'rgba(255,255,255,0.35)', fontSize: 14, padding: 4,
-                }}
-              >
-                {showPass ? '🙈' : '👁️'}
-              </button>
-            </div>
-
-            {/* Login button */}
-            <button onClick={handleLogin} disabled={loading} style={{
-              width: '100%', background: loading ? 'rgba(232,64,28,0.6)' : 'var(--accent)',
-              color: '#fff', border: 'none', borderRadius: 11, padding: 13,
-              fontSize: 14, fontWeight: 700, fontFamily: 'inherit',
-              cursor: loading ? 'not-allowed' : 'pointer', transition: 'all 0.2s',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}>
-              {loading ? (
-                <>
-                  <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⏳</span>
-                  Mengalihkan…
-                </>
-              ) : 'Masuk →'}
-            </button>
-
-            {/* Daftar */}
-            <>
-              <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '20px 0' }} />
-              <button onClick={() => setShowReg(true)} style={{
-                width: '100%', background: 'rgba(255,255,255,0.05)',
-                color: 'rgba(255,255,255,0.6)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 11, padding: 12, fontSize: 13,
-                fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
-                transition: 'background 0.2s',
-              }}>
-                Belum punya akun? Daftar Sekarang
-              </button>
-            </>
-          </>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div style={{
-        fontSize: 11, color: 'rgba(255,255,255,0.2)',
-        marginTop: 24, position: 'relative', zIndex: 1, textAlign: 'center',
-      }}>
-        © 2026 Delcion — Dinas Sosial Kota Manado
-      </div>
-
+    <>
       <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        * { box-sizing: border-box; }
+        input::placeholder {color: rgba(40,75,99,.55); }
       `}</style>
-    </div>
+
+      <AnimatedBackground />
+
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '32px 20px',
+        position: 'relative',
+        zIndex: 1,
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+      }}>
+
+        {/* Logo & tagline */}
+<div style={{ textAlign: 'center', marginBottom: 28 }}>
+  <div
+  style={{
+    fontSize: 38,
+    fontWeight: 800,
+    letterSpacing: '-0.03em',
+    lineHeight: 1,
+    marginBottom: 8,
+
+    textShadow:
+      '0 2px 12px rgba(0,0,0,.35), 0 0 18px rgba(191,219,247,.25)'
+  }}
+>
+    <span style={{ color: '#FFFFFF' }}>Del</span>
+    <span style={{ color: '#BFDBF7' }}>cion</span>
+  </div>
+
+  <div
+    style={{
+      fontSize: 12,
+      color: 'rgba(255,255,255,.92)',
+      letterSpacing: '0.06em',
+      textTransform: 'uppercase',
+      fontWeight: 500,
+    }}
+  >
+    Sistem Pemantauan Pekerja di Bawah Umur
+  </div>
+</div> 
+        {/* Card utama */}
+        <GlowBox style={{ width: '100%', maxWidth: 400, padding: '28px 28px 24px' }}>
+          {showReg ? (
+            <RegisterForm
+              onBack={() => setShowReg(false)}
+              onSuccess={handleRegisterSuccess}
+            />
+          ) : (
+            <>
+              {/* Error */}
+              {error && (
+                <div style={{
+                  background: 'rgba(40,75,99,0.06)',
+                  border: '1px solid rgba(40,75,99,0.18)',
+                  borderRadius: 8, padding: '9px 12px',
+                  fontSize: 12, color: '#284B63', marginBottom: 16,
+                }}>
+                  {error}
+                </div>
+              )}
+
+              <FieldInput
+                label="Email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="Masukkan email Anda"
+                autoComplete="email"
+              />
+
+              {/* Password dengan toggle ikon */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{
+                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                  letterSpacing: '0.08em', color: '#6B7C8D', marginBottom: 7,
+                }}>
+                  Password
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    value={pass}
+                    onChange={e => setPass(e.target.value)}
+                    placeholder="••••••••"
+                    onKeyDown={e => e.key === 'Enter' && handleLogin()}
+                    style={{
+                      width: '100%',
+                      background: '#F4F7F9',
+                      border: '1.5px solid #D9D9D9',
+                      borderRadius: 10,
+                      padding: '11px 44px 11px 14px',
+                      color: '#353535',
+                      fontSize: 14,
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                    onFocus={e => {
+                      e.target.style.borderColor = '#3C6E71'
+                      e.target.style.background  = '#FFFFFF'
+                      e.target.style.boxShadow   = '0 0 0 3px rgba(60,110,113,0.10)'
+                    }}
+                    onBlur={e => {
+                      e.target.style.borderColor = '#D9D9D9'
+                      e.target.style.background  = '#F4F7F9'
+                      e.target.style.boxShadow   = 'none'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(v => !v)}
+                    style={{
+                      position: 'absolute', right: 12, top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none', border: 'none',
+                      cursor: 'pointer', padding: 4,
+                      display: 'flex', alignItems: 'center',
+                      opacity: 0.6,
+                      transition: 'opacity 0.15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                    onMouseLeave={e => e.currentTarget.style.opacity = 0.6}
+                  >
+                    {showPass
+                      ? <IconEyeOff size={17} color="#6B7C8D" />
+                      : <IconEye    size={17} color="#6B7C8D" />
+                    }
+                  </button>
+                </div>
+              </div>
+
+              <GlowButton onClick={handleLogin} disabled={loading}>
+                {loading ? 'Mengalihkan…' : 'Masuk'}
+              </GlowButton>
+
+              <div style={{ height: 1, background: '#D9D9D9', margin: '20px 0' }} />
+
+              {/* Tombol daftar */}
+              <GlowBox
+                animated={true}
+                accentColor="#284B63"
+                style={{ padding: 0 }}
+              >
+                
+                <button
+                  onClick={() => setShowReg(true)}
+                  style={{
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    borderRadius: 16,
+                    padding: '12px 0',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: '#284B63',
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    cursor: 'pointer',
+                  }}
+                >
+                  Daftar Akun untuk Satpol PP
+                </button>
+              </GlowBox>
+            </>
+          )}
+        </GlowBox>
+
+      </div>
+    </>
   )
 }
