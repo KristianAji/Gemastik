@@ -27,7 +27,6 @@ const seedNotifikasi = [
   { id:2, tipe:'laporan', icon:'📋', judul:'Laporan Baru dari Warga — Pasar 45',   deskripsi:'Warga melaporkan anak usia 8–10 tahun mengamen di area parkir Pasar 45.',      meta:['📍 Pasar 45','🕐 1 jam lalu','👤 M. Reza'],           read:false, warna:'amber', laporanId:'LP-2024-141' },
   { id:3, tipe:'laporan', icon:'📋', judul:'Laporan Baru — Figuran Karakter Matos', deskripsi:'Anak memakai kostum figuran sambil meminta sumbangan dari pengunjung Matos.',  meta:['📍 Matos','🕐 5 jam lalu','👤 Andi S.'],              read:false, warna:'red',   laporanId:'LP-2024-140' },
   { id:4, tipe:'selesai', icon:'✅', judul:'Penanganan Selesai — Jl. Boulevard',    deskripsi:'3 anak berhasil dijemput dan dipulangkan ke keluarga oleh petugas Dinsos.',    meta:['📍 Boulevard','🕐 3 jam lalu','👷 Petugas Dinsos'],   read:true,  warna:'green', laporanId:'LP-2024-139' },
-  { id:5, tipe:'info',    icon:'🏫', judul:'Sinkronisasi Data Absensi Sekolah',     deskripsi:'Data absensi dari 12 sekolah mitra berhasil diperbarui.',                      meta:['🏫 12 Sekolah','🕐 Kemarin, 15:00'],                  read:true,  warna:'blue',  laporanId:null },
   { id:6, tipe:'info',    icon:'📊', judul:'Laporan Mingguan Tersedia',             deskripsi:'Ringkasan minggu ke-18: 34 laporan masuk, 28 ditangani (82%).',               meta:['📅 Minggu ke-18','🕐 Kemarin, 08:00'],                read:true,  warna:'',      laporanId:null },
 ]
 
