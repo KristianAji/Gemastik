@@ -114,9 +114,9 @@ function GlowBox({
       onMouseEnter={() => animated && setHovered(true)}
       onMouseLeave={() => animated && setHovered(false)}
       style={{
-        background: 'rgba(255,255,255,.28)',        
-        backdropFilter: 'blur(28px) saturate(190%)',
-        WebkitBackdropFilter: 'blur(28px) saturate(190%)',
+        background:'rgba(255,255,255,.48)',        
+        backdropFilter: 'blur(35px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(35px) saturate(180%)',
 
         border: animated
           ? `1px solid ${
@@ -124,7 +124,7 @@ function GlowBox({
                 ? accentColor + '55'
                 : 'rgba(217,217,217,0.6)'
             }`
-          : '1px solid rgba(255,255,255,.28)',
+          : '1px solid rgba(255,255,255,.55)',
 
         borderRadius: 16,
 
@@ -153,7 +153,12 @@ function GlowBox({
   )
 }
 // ── Input field ───────────────────────────────────────────
-function FieldInput({ label, style, ...props }) {
+function FieldInput({
+  label,
+  style,
+  rightElement,
+  ...props
+}) {
   const [focused, setFocused] = useState(false)
   return (
     <div style={{ marginBottom: 16 }}>
@@ -166,33 +171,71 @@ function FieldInput({ label, style, ...props }) {
           {label}
         </div>
       )}
-      <input
-        {...props}
-        onFocus={e => { setFocused(true); props.onFocus?.(e) }}
-        onBlur={e => { setFocused(false); props.onBlur?.(e) }}
-        style={{
-          width: '100%',
-          background:
-            focused
-            ? 'rgba(255,255,255,.75)'
-            : 'rgba(255,255,255,.22)',
-          border: `1.5px solid ${
-                  focused
-                  ? '#BFDBF7'
-                  : 'rgba(255,255,255,.25)'
-                  }`,
-          borderRadius: 10,
-          padding: '11px 14px',
-          color: '#353535',
-          fontSize: 14,
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          outline: 'none',
-          transition: 'all 0.2s ease',
-          boxShadow: focused ? '0 0 0 3px rgba(60,110,113,0.10)' : 'none',
-          boxSizing: 'border-box',
-          ...style,
-        }}
-      />
+      <div style={{ position: 'relative' }}>
+  <input
+    {...props}
+    onFocus={e => {
+      setFocused(true)
+      props.onFocus?.(e)
+    }}
+    onBlur={e => {
+      setFocused(false)
+      props.onBlur?.(e)
+    }}
+    style={{
+      width: '100%',
+      background: focused
+        ? 'rgba(255,255,255,.75)'
+        : 'rgba(255,255,255,.22)',
+
+      border: `1.5px solid ${
+        focused
+          ? '#BFDBF7'
+          : 'rgba(255,255,255,.25)'
+      }`,
+
+      borderRadius: 10,
+
+      padding: rightElement
+        ? '11px 44px 11px 14px'
+        : '11px 14px',
+
+      color: '#284B63',
+
+      fontSize: 14,
+
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+
+      outline: 'none',
+
+      transition: 'all .2s ease',
+
+      boxShadow: focused
+        ? '0 0 0 3px rgba(191,219,247,.30)'
+        : 'none',
+
+      backdropFilter: 'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)',
+
+      boxSizing: 'border-box',
+
+      ...style,
+    }}
+  />
+
+  {rightElement && (
+    <div
+      style={{
+        position: 'absolute',
+        right: 12,
+        top: '50%',
+        transform: 'translateY(-50%)'
+      }}
+    >
+      {rightElement}
+    </div>
+  )}
+</div>
     </div>
   )
 }
@@ -254,8 +297,12 @@ function RegisterForm({ onBack, onSuccess }) {
       <GlowButton onClick={submit} style={{ marginBottom: 8 }}>Daftar Sekarang</GlowButton>
 
       <button onClick={onBack} style={{
-        width: '100%', background: 'transparent', border: 'none',
-        background:'rgba(255,255,255,.20)', fontSize: 12, marginTop: 4,
+        width: '100%', border: 'none',
+        background: disabled
+        ? 'rgba(255,255,255,.20)'
+        : hovered
+        ? 'rgba(255,255,255,.35)'
+        : 'rgba(255,255,255,.25)',
         cursor: 'pointer', fontFamily: "'Plus Jakarta Sans', sans-serif", padding: 6,
       }}>
         ← Kembali ke Login
@@ -276,12 +323,14 @@ function GlowButton({ children, onClick, disabled, style }) {
       style={{
         width: '100%',
         background: disabled
-          ? '#9BB5C0'
-          : hovered
-            ? '#284B63'
-            : '#3C6E71',
-        color: '#FFFFFF',
-        border: 'none',
+        ? 'rgba(255,255,255,.20)'
+        : hovered
+        ? 'rgba(255,255,255,.35)'
+        : 'rgba(255,255,255,.25)',
+        color: '#284B63',
+        border:'1px solid rgba(255,255,255,.45)',
+        backdropFilter: 'blur(18px)',
+        WebkitBackdropFilter: 'blur(18px)',
         borderRadius: 11,
         padding: '13px 0',
         fontSize: 14,
@@ -289,11 +338,15 @@ function GlowButton({ children, onClick, disabled, style }) {
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         cursor: disabled ? 'not-allowed' : 'pointer',
         transform: hovered && !disabled ? 'translateY(-1px)' : 'translateY(0)',
-        boxShadow: hovered && !disabled
-          ? '0 6px 20px rgba(60,110,113,0.30)'
-          : '0 2px 8px rgba(60,110,113,0.15)',
-        transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
-        ...style,
+        boxShadow:hovered
+        ?`
+        0 10px 30px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.35)
+        `
+        :`
+        0 4px 14px rgba(0,0,0,.08),
+        inset 0 1px 0 rgba(255,255,255,.25)
+        `
       }}
     >
       {children}
@@ -429,66 +482,39 @@ export default function Login() {
                 autoComplete="email"
               />
 
-              {/* Password dengan toggle ikon */}
-              <div style={{ marginBottom: 20 }}>
-                <div style={{
-                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                  letterSpacing: '0.08em', color: '#6B7C8D', marginBottom: 7,
-                }}>
-                  Password
-                </div>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type={showPass ? 'text' : 'password'}
-                    value={pass}
-                    onChange={e => setPass(e.target.value)}
-                    placeholder="••••••••"
-                    onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                    style={{
-                      width: '100%',
-                      background: '#F4F7F9',
-                      border: '1.5px solid #D9D9D9',
-                      borderRadius: 10,
-                      padding: '11px 44px 11px 14px',
-                      color: '#353535',
-                      fontSize: 14,
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                    }}
-                    onFocus={e => {
-                      e.target.style.borderColor = '#3C6E71'
-                      e.target.style.background  = '#FFFFFF'
-                      e.target.style.boxShadow   = '0 0 0 3px rgba(60,110,113,0.10)'
-                    }}
-                    onBlur={e => {
-                      e.target.style.borderColor = '#D9D9D9'
-                      e.target.style.background  = '#F4F7F9'
-                      e.target.style.boxShadow   = 'none'
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPass(v => !v)}
-                    style={{
-                      position: 'absolute', right: 12, top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'none', border: 'none',
-                      cursor: 'pointer', padding: 4,
-                      display: 'flex', alignItems: 'center',
-                      opacity: 0.6,
-                      transition: 'opacity 0.15s',
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = 1}
-                    onMouseLeave={e => e.currentTarget.style.opacity = 0.6}
-                  >
-                    {showPass
-                      ? <IconEyeOff size={17} color="#6B7C8D" />
-                      : <IconEye    size={17} color="#6B7C8D" />
-                    }
-                  </button>
-                </div>
-              </div>
+              <FieldInput
+    label="Password"
+    type={showPass ? "text" : "password"}
+    value={pass}
+    onChange={e => setPass(e.target.value)}
+    placeholder="Masukkan password Anda"
+    onKeyDown={e => e.key === "Enter" && handleLogin()}
+    autoComplete="current-password"
+
+    rightElement={
+        <button
+            type="button"
+            onClick={() => setShowPass(v => !v)}
+            style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                display: 'flex',
+                alignItems: 'center',
+                opacity: .65,
+                transition: '.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = 1}
+            onMouseLeave={e => e.currentTarget.style.opacity = .65}
+        >
+            {showPass
+                ? <IconEyeOff size={17} color="#6B7C8D" />
+                : <IconEye size={17} color="#6B7C8D" />
+            }
+        </button>
+    }
+/>
 
               <GlowButton onClick={handleLogin} disabled={loading}>
                 {loading ? 'Mengalihkan…' : 'Masuk'}
@@ -507,8 +533,8 @@ export default function Login() {
                   onClick={() => setShowReg(true)}
                   style={{
                     width: '100%',
-                    background: 'transparent',
-                    border: 'none',
+                    background:'rgba(255,255,255,.12)',
+                    border:'1px solid rgba(255,255,255,.25)',
                     borderRadius: 16,
                     padding: '12px 0',
                     fontSize: 13,
@@ -518,7 +544,7 @@ export default function Login() {
                     cursor: 'pointer',
                   }}
                 >
-                  Daftar Akun untuk Satpol PP
+                  Daftar Akun untuk Satpol PP dan Dinas Sosial
                 </button>
               </GlowBox>
             </>
