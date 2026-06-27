@@ -296,17 +296,26 @@ function RegisterForm({ onBack, onSuccess }) {
 
       <GlowButton onClick={submit} style={{ marginBottom: 8 }}>Daftar Sekarang</GlowButton>
 
-      <button onClick={onBack} style={{
-        width: '100%', border: 'none',
-        background: disabled
-        ? 'rgba(255,255,255,.20)'
-        : hovered
-        ? 'rgba(255,255,255,.35)'
-        : 'rgba(255,255,255,.25)',
-        cursor: 'pointer', fontFamily: "'Plus Jakarta Sans', sans-serif", padding: 6,
-      }}>
-        ← Kembali ke Login
-      </button>
+      <button
+      onClick={onBack}
+      style={{
+        width: '100%',
+        border: 'none',
+        background: 'transparent',
+        cursor: 'pointer',
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontSize: 13,
+        fontWeight: 600,
+        color: 'rgba(40,75,99,0.7)',
+        padding: '8px 0',
+        marginTop: 4,
+        transition: 'color 0.2s',
+      }}
+  onMouseEnter={e => e.currentTarget.style.color = '#284B63'}
+  onMouseLeave={e => e.currentTarget.style.color = 'rgba(40,75,99,0.7)'}
+>
+  ← Kembali ke Login
+</button>
     </div>
   )
 }

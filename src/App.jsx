@@ -13,6 +13,7 @@ import AdminPeta       from './pages/admin/Peta'
 import AdminNotifikasi from './pages/admin/Notifikasi'
 import AdminLaporan    from './pages/admin/Laporan'
 import AdminStatistik  from './pages/admin/Statistik'
+import AdminKelolaAkun from './pages/admin/KelolaAkun'
 
 // Public pages
 import PubBeranda  from './pages/public/Beranda'
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="notifikasi" element={<AdminNotifikasi />} />
           <Route path="laporan"    element={<AdminLaporan />} />
           <Route path="statistik"  element={<AdminStatistik />} />
+          <Route  path="kelola-akun" element={<AdminKelolaAkun />} />
         </Route>
 
         {/* ── Public (hanya role 'public') ── */}
