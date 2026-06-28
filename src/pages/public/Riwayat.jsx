@@ -189,14 +189,6 @@ export default function PubRiwayat() {
         .riwayat-breadcrumb button:hover { color: #BFDBF7; }
         .riwayat-breadcrumb span { color: #BFDBF7; }
 
-        /* header row: kiri teks + kanan tombol */
-        .riwayat-header-row {
-          display: flex;
-          align-items: flex-end;
-          justify-content: space-between;
-          gap: 24px;
-        }
-
         /* badge — sama dengan .laporan-badge */
         .riwayat-eyebrow {
           display: inline-flex;
@@ -234,27 +226,30 @@ export default function PubRiwayat() {
           margin: 0;
         }
 
-        /* tombol di kanan header */
-        .btn-cta-primary {
-          display: flex;
+        /* tombol buat laporan — glass effect */
+        .btn-buat-laporan {
+          display: inline-flex;
           align-items: center;
-          justify-content: center;
           gap: 8px;
-          padding: 14px 24px;
-          background: #1F7A8C;
-          color: #FFFFFF;
-          border: none;
-          border-radius: 12px;
+          padding: 11px 22px;
+          background: rgba(255,255,255,0.65);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          color: #022B3A;
+          border: 1px solid rgba(255,255,255,0.85);
+          border-radius: 10px;
           font-family: 'Plus Jakarta Sans', sans-serif;
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 700;
           cursor: pointer;
-          transition: background 0.2s, transform 0.15s;
+          box-shadow: 0 2px 12px rgba(2,43,58,0.08);
+          transition: all 0.18s;
           white-space: nowrap;
-          flex-shrink: 0;
+          margin-bottom: 20px;
         }
-        .btn-cta-primary:hover {
-          background: #176878;
+        .btn-buat-laporan:hover {
+          background: rgba(255,255,255,0.88);
+          box-shadow: 0 4px 18px rgba(2,43,58,0.12);
           transform: translateY(-1px);
         }
 
@@ -428,7 +423,6 @@ export default function PubRiwayat() {
         /* ── Responsif — disamakan dengan PubBuatLaporan ── */
         @media (max-width: 768px) {
           .riwayat-header { padding: 40px 24px 32px; }
-          .riwayat-header-row { flex-direction: column; align-items: stretch; }
           .riwayat-content { padding: 24px 16px 60px; }
           .laporan-meta { gap: 10px; }
         }
@@ -449,20 +443,11 @@ export default function PubRiwayat() {
               <span>Riwayat</span>
             </div>
 
-            {/* flex row: kiri = badge + judul + sub, kanan = tombol */}
-            <div className="riwayat-header-row">
-              <div>
-                <div className="riwayat-eyebrow">Pemantauan Personal</div>
-                <h1 className="riwayat-title">Riwayat <span>Laporan</span></h1>
-                <p className="riwayat-subtitle">
-                  Laporan yang pernah Anda buat dan status penanganannya.
-                </p>
-              </div>
-              <button className="btn-cta-primary" onClick={() => navigate('/public/laporan')}>
-                <IconPlus size={15} />
-                Buat Laporan
-              </button>
-            </div>
+            <div className="riwayat-eyebrow">Pemantauan Personal</div>
+            <h1 className="riwayat-title">Riwayat <span>Laporan</span></h1>
+            <p className="riwayat-subtitle">
+              Laporan yang pernah Anda buat dan status penanganannya.
+            </p>
 
           </div>
         </header>
@@ -472,6 +457,12 @@ export default function PubRiwayat() {
         ══════════════════════════════════════ */}
         <section className="riwayat-content">
           <div className="riwayat-content-inner">
+
+            {/* Tombol buat laporan — glass, di atas list */}
+            <button className="btn-buat-laporan" onClick={() => navigate('/public/laporan')}>
+              <IconPlus size={14} />
+              Buat Laporan Baru
+            </button>
 
             {myReports.length === 0 ? (
               <div className="empty-state">

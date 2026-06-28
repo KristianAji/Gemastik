@@ -29,11 +29,12 @@ export default function FooterPublic() {
         .footer-logo {
           font-size: 36px;
           margin-bottom: 18px;
-          color: #BFDBF7;
+          color: #FFFFFF;
           font-family: 'Plus Jakarta Sans', sans-serif;
           font-weight: 800;
+          letter-spacing: -0.02em;
         }
-        .footer-logo span { color: #1F7A8C; }
+        .footer-logo span { color: #BFDBF7; }
         .footer-desc {
           font-size: 13px;
           line-height: 1.7;
