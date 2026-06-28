@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
 
 /* ── Palette (identik dengan AdminBeranda) ─────────────────── */
-const N      = '#022B3A'
+const N      = '#284B63'
 const T      = '#3C6E71'
-const TEXT   = '#1a2e3b'
-const MUTED  = '#5A7080'
-const BORDER = '#D6DCE4'
+const TEXT   = '#353535'
+const MUTED  = '#6B7C8D'
+const BORDER = '#D9D9D9'
 const CARD   = '#FFFFFF'
-const BG     = '#E1E5F2'
+const BG     = '#F4F7F9'
 const RED    = '#C0392B'
 const AMBER  = '#D4820A'
 const GREEN  = '#1E7E4A'
@@ -100,7 +100,7 @@ export default function AdminPeta() {
   const [selected, setSelected] = useState(null)
   const [filter, setFilter]     = useState('semua')
 
-  const filtered  = PINS.filter(p => filter === 'semua' || p.status === filter)
+  const filtered     = PINS.filter(p => filter === 'semua' || p.status === filter)
   const totalBaru    = PINS.filter(p => p.status === 'baru').length
   const totalProses  = PINS.filter(p => p.status === 'proses').length
   const totalSelesai = PINS.filter(p => p.status === 'selesai').length
@@ -118,12 +118,12 @@ export default function AdminPeta() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         .ap-root * { box-sizing: border-box; }
 
         .ap-root {
-          font-family: 'Inter', sans-serif;
+          font-family: 'Plus Jakarta Sans', sans-serif;
           background: ${BG};
           color: ${TEXT};
           flex: 1;
@@ -134,7 +134,7 @@ export default function AdminPeta() {
           gap: 24px;
         }
 
-        /* ══ BANNER (identik Beranda) ══ */
+        /* ══ BANNER ══ */
         .ap-banner {
           background: ${N};
           border-radius: 18px;
@@ -225,7 +225,7 @@ export default function AdminPeta() {
         }
         .ap-btn-ghost:hover { background: rgba(255,255,255,0.14); }
 
-        /* ══ KPI GLASS CARDS (identik Beranda) ══ */
+        /* ══ KPI GLASS CARDS ══ */
         .ap-kpi-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
@@ -302,7 +302,7 @@ export default function AdminPeta() {
           transition: width 1s ease;
         }
 
-        /* ══ CARD BASE (identik Beranda) ══ */
+        /* ══ CARD BASE ══ */
         .ap-card {
           background: ${CARD};
           border: 1px solid ${BORDER};
@@ -326,7 +326,7 @@ export default function AdminPeta() {
           cursor: pointer; font-weight: 600;
           background: none; border: none; padding: 0;
           transition: color 0.15s;
-          font-family: 'Inter', sans-serif;
+          font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .ap-card-link:hover { color: ${N}; }
 
@@ -414,7 +414,7 @@ export default function AdminPeta() {
         .ap-pin-card.selected {
           background: #fff;
           border-color: var(--pin-color);
-          box-shadow: 0 4px 20px rgba(2,43,58,0.08);
+          box-shadow: 0 4px 20px rgba(40,75,99,0.08);
         }
         .ap-pin-card-head {
           display: flex;
@@ -677,11 +677,11 @@ export default function AdminPeta() {
                 <line x1="100" y1="100" x2="600" y2="400" stroke="rgba(255,255,255,0.05)" strokeWidth="1.5"/>
 
                 {/* Area labels */}
-                <text x="40"  y="210" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="Inter, sans-serif">Megamas</text>
-                <text x="240" y="210" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="Inter, sans-serif">Pasar 45</text>
-                <text x="395" y="210" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="Inter, sans-serif">Matos</text>
-                <text x="240" y="340" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="Inter, sans-serif">Jl. Boulevard</text>
-                <text x="548" y="265" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="Inter, sans-serif">Wenang</text>
+                <text x="40"  y="210" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="'Plus Jakarta Sans', sans-serif">Megamas</text>
+                <text x="240" y="210" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="'Plus Jakarta Sans', sans-serif">Pasar 45</text>
+                <text x="395" y="210" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="'Plus Jakarta Sans', sans-serif">Matos</text>
+                <text x="240" y="340" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="'Plus Jakarta Sans', sans-serif">Jl. Boulevard</text>
+                <text x="548" y="265" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="'Plus Jakarta Sans', sans-serif">Wenang</text>
 
                 {/* Pins */}
                 {filtered.map(pin => {
@@ -707,8 +707,8 @@ export default function AdminPeta() {
                     <g>
                       <rect x={cx} y={cy} width="190" height="84" rx="10" fill="#fff" stroke={meta.pinColor} strokeWidth="1.5" opacity="0.97"/>
                       <text x={cx+12} y={cy+20} fill={meta.pinColor} fontSize="11" fontFamily="'Plus Jakarta Sans', sans-serif" fontWeight="700">{p.label}</text>
-                      <text x={cx+12} y={cy+36} fill="rgba(26,46,59,0.8)" fontSize="10" fontFamily="Inter, sans-serif">{p.desc}</text>
-                      <text x={cx+12} y={cy+50} fill="rgba(90,112,128,0.8)" fontSize="9" fontFamily="Inter, sans-serif">🕐 {p.time}</text>
+                      <text x={cx+12} y={cy+36} fill="rgba(53,53,53,0.8)" fontSize="10" fontFamily="'Plus Jakarta Sans', sans-serif">{p.desc}</text>
+                      <text x={cx+12} y={cy+50} fill="rgba(107,124,141,0.8)" fontSize="9" fontFamily="'Plus Jakarta Sans', sans-serif">🕐 {p.time}</text>
                       <rect x={cx+12} y={cy+60} width="80" height="16" rx="5" fill={meta.pinColor} style={{ cursor:'pointer' }}
                         onClick={() => handleDetail(p)}/>
                       <text x={cx+52} y={cy+71} textAnchor="middle" fill="#fff" fontSize="9"
@@ -750,8 +750,8 @@ export default function AdminPeta() {
 
             <div style={{ padding:12, display:'flex', flexDirection:'column', gap:8, flex:1, overflowY:'auto' }}>
               {PINS.map(pin => {
-                const meta   = STATUS_META[pin.status]
-                const isSel  = selected?.id === pin.id
+                const meta  = STATUS_META[pin.status]
+                const isSel = selected?.id === pin.id
                 return (
                   <div
                     key={pin.id}

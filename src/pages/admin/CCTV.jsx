@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
 
-const N      = '#022B3A'
+const N      = '#284B63'
 const T      = '#3C6E71'
 const TEXT   = '#1a2e3b'
-const MUTED  = '#5A7080'
-const BORDER = '#D6DCE4'
+const MUTED  = '#6B7C8D'
+const BORDER = '#D9D9D9'
 const CARD   = '#FFFFFF'
-const BG     = '#E1E5F2'
+const BG     = '#F4F7F9'
 const RED    = '#C0392B'
 const GREEN  = '#1E7E4A'
 
@@ -25,7 +25,6 @@ const CAMS = [
   { id: 4, label: 'Boulevard — CAM 04',    resolusi: '720p',  fps: 15, alert: false, detections: [] },
 ]
 
-// ── SVG Icons (sama dengan AdminBeranda) ──────────────────────
 const Icon = {
   cctv: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -73,32 +72,11 @@ const Icon = {
       <polyline points="12 19 5 12 12 5"/>
     </svg>
   ),
-  expand: (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-    </svg>
-  ),
-  focus: (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-  ),
-  pin: (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-      <circle cx="12" cy="10" r="3"/>
-    </svg>
-  ),
   warning: (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
       <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
       <line x1="12" y1="9" x2="12" y2="13"/>
       <line x1="12" y1="17" x2="12.01" y2="17"/>
-    </svg>
-  ),
-  check: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-      <polyline points="20 6 9 17 4 12"/>
     </svg>
   ),
   detect: (
@@ -163,12 +141,12 @@ export default function AdminCCTV() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         .ac-root * { box-sizing: border-box; }
 
         .ac-root {
-          font-family: 'Inter', sans-serif;
+          font-family: 'Plus Jakarta Sans', sans-serif;
           background: ${BG};
           color: ${TEXT};
           flex: 1;
@@ -239,7 +217,7 @@ export default function AdminCCTV() {
           font-size: 11px;
           color: rgba(191,219,247,0.35);
           margin-top: 12px;
-          font-family: 'Inter', monospace;
+          font-family: 'Plus Jakarta Sans', monospace;
           letter-spacing: 0.02em;
         }
         .ac-banner-actions {
@@ -358,7 +336,7 @@ export default function AdminCCTV() {
           cursor: pointer; font-weight: 600;
           background: none; border: none; padding: 0;
           transition: color 0.15s;
-          font-family: 'Inter', sans-serif;
+          font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .ac-card-link:hover { color: ${N}; }
 
@@ -414,59 +392,44 @@ export default function AdminCCTV() {
         .ac-cctv-overlay {
           position: absolute; inset: 0;
           display: flex; flex-direction: column;
-          justify-content: space-between; padding: 12px;
-          background: linear-gradient(
-            to bottom,
-            rgba(0,0,0,0.55) 0%, transparent 35%,
-            transparent 60%, rgba(0,0,0,0.65) 100%
-          );
+          justify-content: space-between; padding: 10px;
+          background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 35%, transparent 60%, rgba(0,0,0,0.65) 100%);
         }
-        .ac-cctv-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+        .ac-cctv-top { display: flex; justify-content: space-between; align-items: flex-start; }
         .ac-cctv-label {
           font-size: 10px; font-weight: 600;
-          background: rgba(2,43,58,0.75);
-          color: rgba(191,219,247,0.9);
-          padding: 4px 10px; border-radius: 6px;
+          background: rgba(40,75,99,0.75); color: rgba(191,219,247,0.9);
+          padding: 3px 9px; border-radius: 6px;
           display: flex; align-items: center; gap: 5px;
         }
         .ac-cctv-badge-rec {
           font-size: 9px; font-weight: 700;
-          background: rgba(192,57,43,0.85);
-          color: #fff;
-          padding: 3px 9px; border-radius: 6px;
+          background: rgba(192,57,43,0.85); color: #fff;
+          padding: 3px 8px; border-radius: 6px;
           display: flex; align-items: center; gap: 4px;
         }
         .ac-cctv-badge-rec-dot {
-          width: 5px; height: 5px; border-radius: 50%;
-          background: #fff;
+          width: 5px; height: 5px; border-radius: 50%; background: #fff;
           animation: ac-pulse 1.2s ease infinite;
         }
         .ac-cctv-alert-banner {
           font-size: 10px; font-weight: 700;
-          background: rgba(192,57,43,0.88);
-          color: #fff; padding: 6px 12px;
-          border-radius: 7px; text-align: center;
-          display: flex; align-items: center;
-          justify-content: center; gap: 5px;
+          background: rgba(192,57,43,0.88); color: #fff;
+          padding: 5px 10px; border-radius: 7px; text-align: center;
+          display: flex; align-items: center; justify-content: center; gap: 5px;
         }
-        .ac-cctv-footer {
-          display: flex; align-items: center; justify-content: space-between;
-        }
-        .ac-cctv-res {
-          font-size: 9px; color: rgba(255,255,255,0.4);
-          font-family: 'Inter', monospace;
-        }
+        .ac-cctv-footer { display: flex; align-items: center; justify-content: space-between; }
+        .ac-cctv-res { font-size: 9px; color: rgba(255,255,255,0.4); font-family: monospace; }
         .ac-cctv-actions { display: flex; gap: 6px; }
         .ac-cctv-btn {
           font-size: 10px; font-weight: 600; color: rgba(191,219,247,0.85);
-          background: rgba(2,43,58,0.65);
-          border: 1px solid rgba(191,219,247,0.15);
-          border-radius: 6px; padding: 4px 10px; cursor: pointer;
+          background: rgba(40,75,99,0.65); border: 1px solid rgba(191,219,247,0.15);
+          border-radius: 6px; padding: 3px 9px; cursor: pointer;
           font-family: 'Plus Jakarta Sans', sans-serif;
-          transition: background 0.15s;
+          transition: background 0.12s;
           display: flex; align-items: center; gap: 4px;
         }
-        .ac-cctv-btn:hover { background: rgba(60,110,113,0.55); }
+        .ac-cctv-btn:hover { background: rgba(60,110,113,0.5); }
 
         /* ══ TOMBOL OUTLINE ══ */
         .ac-btn-outline {
@@ -624,7 +587,6 @@ export default function AdminCCTV() {
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              {/* Layout toggle */}
               <div className="ac-layout-group">
                 {[
                   { key: '2x2', icon: Icon.grid2, label: '2×2' },
@@ -647,9 +609,7 @@ export default function AdminCCTV() {
             </div>
           </div>
 
-          <div
-            className={`ac-cctv-grid ${focus !== null ? 'layout-focus' : `layout-${layout}`}`}
-          >
+          <div className={`ac-cctv-grid ${focus !== null ? 'layout-focus' : `layout-${layout}`}`}>
             {displayCams.map((cam, i) => (
               <CCTVFeed
                 key={cam.id}
@@ -716,21 +676,14 @@ export default function AdminCCTV() {
                 badgeColor: GREEN,
               },
             ].map((d, i) => (
-              <div
-                key={i}
-                className="ac-alert-item"
-                onClick={() => navigate('/admin/laporan')}
-              >
+              <div key={i} className="ac-alert-item" onClick={() => navigate('/admin/laporan')}>
                 <div className="ac-alert-dot" style={{ background: d.dot }} />
                 <div style={{ flex: 1 }}>
                   <div className="ac-alert-title">{d.title}</div>
                   <div className="ac-alert-sub">{d.sub}</div>
                   <div style={{ fontSize: 10, color: '#9BAAB5', marginTop: 4 }}>{d.time}</div>
                 </div>
-                <span
-                  className="ac-pill"
-                  style={{ background: d.badgeBg, color: d.badgeColor }}
-                >
+                <span className="ac-pill" style={{ background: d.badgeBg, color: d.badgeColor }}>
                   {d.badge}
                 </span>
               </div>
@@ -771,7 +724,7 @@ export default function AdminCCTV() {
   )
 }
 
-/* ─── CCTV Feed Canvas (sama dengan AdminBeranda, ditingkatkan) ── */
+/* ─── CCTV Feed Canvas ── */
 function CCTVFeed({ cam, isFocused, onFocus, onExpand }) {
   const canvasRef = useRef(null)
   const animRef   = useRef(null)
@@ -787,13 +740,11 @@ function CCTVFeed({ cam, isFocused, onFocus, onExpand }) {
       const H = canvas.height
       timeRef.current = ts * 0.001
 
-      // Sky
       ctx.fillStyle = '#060f1c'
       ctx.fillRect(0, 0, W, H)
       ctx.fillStyle = '#0a1828'
       ctx.fillRect(0, H * 0.7, W, H * 0.3)
 
-      // Buildings
       const buildings = [
         { x: 0,    y: 0.20, w: 0.14, h: 0.50, c: '#0d1f38' },
         { x: 0.16, y: 0.28, w: 0.12, h: 0.42, c: '#0c1c32' },
@@ -818,7 +769,6 @@ function CCTVFeed({ cam, isFocused, onFocus, onExpand }) {
         }
       })
 
-      // Road
       ctx.fillStyle = '#0f1e2e'
       ctx.fillRect(0, H * 0.68, W, H * 0.06)
       ctx.strokeStyle = 'rgba(255,255,255,0.08)'
@@ -827,7 +777,6 @@ function CCTVFeed({ cam, isFocused, onFocus, onExpand }) {
       ctx.beginPath(); ctx.moveTo(0, H * 0.71); ctx.lineTo(W, H * 0.71); ctx.stroke()
       ctx.setLineDash([])
 
-      // Moving figures
       for (let p = 0; p < 4 + cam.id; p++) {
         const speed = 0.03 + p * 0.01
         const px = ((timeRef.current * speed * (p % 2 === 0 ? 1 : -1) + p * 0.25) % 1 + 1) % 1
@@ -842,7 +791,6 @@ function CCTVFeed({ cam, isFocused, onFocus, onExpand }) {
         ctx.fill()
       }
 
-      // AI Bounding boxes
       if (cam.detections.length > 0) {
         cam.detections.forEach(d => {
           const pulse = 0.7 + Math.sin(timeRef.current * 2) * 0.3
@@ -859,13 +807,11 @@ function CCTVFeed({ cam, isFocused, onFocus, onExpand }) {
         })
       }
 
-      // Scanlines
       for (let y = 0; y < H; y += 3) {
         ctx.fillStyle = 'rgba(0,0,0,0.06)'
         ctx.fillRect(0, y, W, 1)
       }
 
-      // Timestamp
       ctx.fillStyle = 'rgba(191,219,247,0.35)'
       ctx.font = '8px monospace'
       ctx.fillText(new Date().toLocaleTimeString('id-ID'), 6, H - 6)
@@ -881,7 +827,7 @@ function CCTVFeed({ cam, isFocused, onFocus, onExpand }) {
   return (
     <div
       className="ac-cctv-feed"
-      style={{ outline: cam.alert ? `2px solid ${RED}` : 'none' }}
+      style={{ outline: cam.alert ? `2px solid #C0392B` : 'none' }}
     >
       <canvas ref={canvasRef} width={640} height={360} />
       <div className="ac-cctv-overlay">
@@ -905,7 +851,7 @@ function CCTVFeed({ cam, isFocused, onFocus, onExpand }) {
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
               <line x1="12" y1="9" x2="12" y2="13"/>
             </svg>
-            Terdeteksi: anak berjualan — 14 mnt lalu
+            Terdeteksi: anak berjualan
           </div>
         )}
 
@@ -913,27 +859,9 @@ function CCTVFeed({ cam, isFocused, onFocus, onExpand }) {
           <span className="ac-cctv-res">{cam.resolusi} · {cam.fps}fps</span>
           <div className="ac-cctv-actions">
             <button className="ac-cctv-btn" onClick={onFocus}>
-              {isFocused ? (
-                <>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                  </svg>
-                  Semua
-                </>
-              ) : (
-                <>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-                  </svg>
-                  Fokus
-                </>
-              )}
+              {isFocused ? 'Semua' : 'Fokus'}
             </button>
             <button className="ac-cctv-btn" onClick={onExpand}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
-                <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
-              </svg>
               Perluas
             </button>
           </div>
