@@ -1,0 +1,24 @@
+[33m4862948[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: reset: moving to HEAD
+[33m4862948[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{1}: pull origin main: Fast-forward
+[33m9e344cf[m HEAD@{2}: reset: moving to HEAD
+[33m9e344cf[m HEAD@{3}: pull origin main: Fast-forward
+[33mb80c763[m HEAD@{4}: pull origin main: Fast-forward
+[33ma2b772a[m HEAD@{5}: commit: update tampilan admin dp3a
+[33mc524a36[m HEAD@{6}: pull origin main: Fast-forward
+[33m9c979bc[m HEAD@{7}: commit: Update project
+[33m4f827ae[m HEAD@{8}: pull origin main: Fast-forward
+[33mf575459[m HEAD@{9}: commit: Update project
+[33m256dd49[m HEAD@{10}: commit: update tentang
+[33m8eab6f3[m HEAD@{11}: commit: semoga jadi
+[33m368bf61[m HEAD@{12}: commit: semoga jadi
+[33m3a3d764[m HEAD@{13}: commit: semoga jadi
+[33m13845a2[m HEAD@{14}: commit: semoga jadi
+[33mb6ae64d[m HEAD@{15}: commit: semoga jadi
+[33m1ff7c78[m HEAD@{16}: commit: ganti app
+[33m7b2132c[m HEAD@{17}: commit: remove pwa cache issue
+[33md8d4b83[m HEAD@{18}: commit: fix github pages routing
+[33m3db95b5[m HEAD@{19}: commit: remove broken pwa icons
+[33m3235ef8[m HEAD@{20}: commit: fix router github pages
+[33mb274418[m HEAD@{21}: commit: fix github pages deployment
+[33mb2583d1[m HEAD@{22}: Branch: renamed refs/heads/master to refs/heads/main
+[33mb2583d1[m HEAD@{24}: commit (initial): Initial commit

@@ -14,6 +14,8 @@ import AdminNotifikasi from './pages/admin/Notifikasi'
 import AdminLaporan    from './pages/admin/Laporan'
 import AdminStatistik  from './pages/admin/Statistik'
 import AdminKelolaAkun from './pages/admin/KelolaAkun'
+import LaporanDetail   from './pages/admin/LaporanDetail'
+import Petugas         from './pages/admin/Petugas'
 
 // Public pages
 import PubBeranda  from './pages/public/Beranda'
@@ -48,11 +50,18 @@ export default function App() {
           <Route path="laporan"    element={<AdminLaporan />} />
           <Route path="statistik"  element={<AdminStatistik />} />
           <Route  path="kelola-akun" element={<AdminKelolaAkun />} />
+          <Route index            element={<AdminBeranda />} />
+          <Route path="cctv"         element={<AdminCCTV />} />
+          <Route path="peta"         element={<AdminPeta />} />
+          <Route path="notifikasi"   element={<AdminNotifikasi />} />
+          <Route path="laporan"      element={<AdminLaporan />} />
+          <Route path="laporan/:id"  element={<LaporanDetail />} />
+          <Route path="statistik"    element={<AdminStatistik />} />
+          <Route path="petugas"      element={<Petugas />} />
         </Route>
 
         {/* ── Public (hanya role 'public') ── */}
-        // SESUDAH
-          <Route path="/public" element={<PublicLayout />}>
+        <Route path="/public" element={<PublicLayout />}>
           <Route index         element={<PubBeranda />} />
           <Route path="laporan"  element={<PubLaporan />} />
           <Route path="riwayat"  element={<PubRiwayat />} />
