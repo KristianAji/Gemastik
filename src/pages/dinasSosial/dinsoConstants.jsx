@@ -1,11 +1,11 @@
-// ─── Design Tokens (identik dengan AdminBeranda) ─────────────
-export const N      = '#022B3A'
+// ─── Design Tokens (identik dengan AdminPeta / tema final DP3A) ─
+export const N      = '#284B63'
 export const T      = '#3C6E71'
-export const TEXT   = '#1a2e3b'
-export const MUTED  = '#5A7080'
-export const BORDER = '#D6DCE4'
+export const TEXT   = '#353535'
+export const MUTED   = '#6B7C8D'
+export const BORDER = '#D9D9D9'
 export const CARD   = '#FFFFFF'
-export const BG     = '#E1E5F2'
+export const BG     = '#F4F7F9'
 export const RED    = '#C0392B'
 export const AMBER  = '#D4820A'
 export const GREEN  = '#1E7E4A'
@@ -156,14 +156,16 @@ export const Icon = {
 }
 
 // ─── Shared CSS (banner, KPI, card, tabs, live-dot) ──────────
+// Disamakan dengan tema final AdminPeta (DP3A): font tunggal Plus Jakarta Sans,
+// N=#284B63, TEXT=#353535, MUTED=#6B7C8D, BORDER=#D9D9D9, BG=#F4F7F9
 export const SHARED_STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
   .ds-root * { box-sizing: border-box; }
   .ds-root {
-    font-family: 'Inter', sans-serif;
-    background: #E1E5F2;
-    color: #1a2e3b;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: ${BG};
+    color: ${TEXT};
     flex: 1;
     overflow-y: auto;
     padding: 28px 32px 60px;
@@ -174,7 +176,7 @@ export const SHARED_STYLES = `
 
   /* ══ BANNER ══ */
   .ds-banner {
-    background: #022B3A;
+    background: ${N};
     border-radius: 18px;
     padding: 28px 36px;
     display: flex;
@@ -213,7 +215,7 @@ export const SHARED_STYLES = `
   .ds-banner-sub strong { color:#fff; font-weight:700; }
   .ds-banner-clock {
     font-size:11px; color:rgba(191,219,247,0.35); margin-top:12px;
-    font-family:'Inter',monospace; letter-spacing:0.02em;
+    font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:0.02em;
   }
   .ds-banner-actions {
     display:flex; flex-direction:column; gap:10px; flex-shrink:0;
@@ -221,7 +223,7 @@ export const SHARED_STYLES = `
   }
   .ds-btn-teal {
     display:flex; align-items:center; gap:8px; padding:12px 22px;
-    background:#3C6E71; color:#fff; border:none; border-radius:10px;
+    background:${T}; color:#fff; border:none; border-radius:10px;
     font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700;
     cursor:pointer; transition:background 0.2s,transform 0.15s; white-space:nowrap;
   }
@@ -248,7 +250,7 @@ export const SHARED_STYLES = `
   }
   .ds-kpi-card::before {
     content:''; position:absolute; top:0; left:0; right:0;
-    height:3px; background:#3C6E71; border-radius:16px 16px 0 0;
+    height:3px; background:${T}; border-radius:16px 16px 0 0;
   }
   .ds-kpi-card:hover {
     background:rgba(255,255,255,0.75);
@@ -258,44 +260,44 @@ export const SHARED_STYLES = `
     width:40px; height:40px; border-radius:10px;
     background:rgba(60,110,113,0.1); border:1px solid rgba(60,110,113,0.2);
     display:flex; align-items:center; justify-content:center;
-    color:#3C6E71; margin-bottom:16px;
+    color:${T}; margin-bottom:16px;
   }
   .ds-kpi-num {
     font-family:'Plus Jakarta Sans',sans-serif; font-size:34px; font-weight:800;
-    color:#3C6E71; line-height:1; margin-bottom:5px; letter-spacing:-0.02em;
+    color:${T}; line-height:1; margin-bottom:5px; letter-spacing:-0.02em;
   }
-  .ds-kpi-label { font-size:12px; color:#5A7080; font-weight:500; margin-bottom:8px; }
-  .ds-kpi-delta { font-size:11px; font-weight:600; color:#3C6E71; }
+  .ds-kpi-label { font-size:12px; color:${MUTED}; font-weight:500; margin-bottom:8px; }
+  .ds-kpi-delta { font-size:11px; font-weight:600; color:${T}; }
   .ds-kpi-bar {
     height:3px; border-radius:2px; background:rgba(60,110,113,0.12);
     margin-top:14px; overflow:hidden;
   }
-  .ds-kpi-bar-fill { height:100%; border-radius:2px; background:#3C6E71; transition:width 1s ease; }
+  .ds-kpi-bar-fill { height:100%; border-radius:2px; background:${T}; transition:width 1s ease; }
 
   /* ══ CARD BASE ══ */
-  .ds-card { background:#FFFFFF; border:1px solid #D6DCE4; border-radius:14px; overflow:hidden; }
+  .ds-card { background:${CARD}; border:1px solid ${BORDER}; border-radius:14px; overflow:hidden; }
   .ds-card-head {
-    padding:16px 20px; border-bottom:1px solid #D6DCE4;
+    padding:16px 20px; border-bottom:1px solid ${BORDER};
     display:flex; align-items:center; justify-content:space-between;
   }
   .ds-card-title {
     font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700;
-    color:#022B3A; display:flex; align-items:center; gap:8px;
+    color:${N}; display:flex; align-items:center; gap:8px;
   }
   .ds-card-link {
-    display:flex; align-items:center; gap:4px; font-size:12px; color:#3C6E71;
+    display:flex; align-items:center; gap:4px; font-size:12px; color:${T};
     cursor:pointer; font-weight:600; background:none; border:none; padding:0;
-    transition:color 0.15s; font-family:'Inter',sans-serif;
+    transition:color 0.15s; font-family:'Plus Jakarta Sans',sans-serif;
   }
-  .ds-card-link:hover { color:#022B3A; }
+  .ds-card-link:hover { color:${N}; }
 
   /* ══ ROW ITEM ══ */
   .ds-row-item {
-    padding:12px 20px; border-bottom:1px solid #D6DCE4;
+    padding:12px 20px; border-bottom:1px solid ${BORDER};
     display:flex; align-items:center; justify-content:space-between; font-size:12px;
   }
   .ds-row-item:last-child { border-bottom:none; }
-  .ds-row-label { color:#5A7080; }
+  .ds-row-label { color:${MUTED}; }
   .ds-row-val { font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; }
 
   /* ══ PILL ══ */
@@ -306,7 +308,7 @@ export const SHARED_STYLES = `
 
   /* ══ LIVE DOT ══ */
   .ds-live-dot {
-    width:7px; height:7px; border-radius:50%; background:#1E7E4A;
+    width:7px; height:7px; border-radius:50%; background:${GREEN};
     display:inline-block; animation:ds-pulse 2s ease infinite;
   }
   @keyframes ds-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
@@ -316,12 +318,12 @@ export const SHARED_STYLES = `
 
   /* ══ BUTTON OUTLINE ══ */
   .ds-btn-outline {
-    padding:9px 24px; background:transparent; color:#022B3A;
-    border:1.5px solid #022B3A; border-radius:9px;
+    padding:9px 24px; background:transparent; color:${N};
+    border:1.5px solid ${N}; border-radius:9px;
     font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700;
     cursor:pointer; transition:all 0.2s;
   }
-  .ds-btn-outline:hover { background:#022B3A; color:#fff; }
+  .ds-btn-outline:hover { background:${N}; color:#fff; }
 
   /* ══ RESPONSIVE ══ */
   @media (max-width:1100px) {

@@ -242,6 +242,7 @@ function FieldInput({
 
 // ── Form Registrasi ───────────────────────────────────────
 function RegisterForm({ onBack, onSuccess }) {
+  const registerAkun = useStore(s => s.registerAkun)
   const [nama,  setNama]  = useState('')
   const [hp,    setHp]    = useState('')
   const [email, setEmail] = useState('')
@@ -254,6 +255,11 @@ function RegisterForm({ onBack, onSuccess }) {
     if (!nama || !hp || !email || !pass) return setError('Mohon lengkapi semua data.')
     if (pass.length < 8)                 return setError('Password minimal 8 karakter.')
     if (!/\S+@\S+\.\S+/.test(email))    return setError('Format email tidak valid.')
+
+    const sudahAda = ACCOUNTS.find(a => a.email === email.trim().toLowerCase())
+    if (sudahAda) return setError('Email sudah terdaftar.')
+
+    registerAkun({ nama, email, password: pass })
     setOk(true)
     setTimeout(() => onSuccess(email), 1600)
   }
@@ -289,33 +295,26 @@ function RegisterForm({ onBack, onSuccess }) {
         </div>
       )}
 
-      <FieldInput label="Nama Lengkap"     value={nama}  onChange={e => setNama(e.target.value)}  placeholder="Nama lengkap Anda" />
-      <FieldInput label="No. HP / WhatsApp" type="tel"   value={hp}    onChange={e => setHp(e.target.value)}    placeholder="08xxxxxxxxxx" />
-      <FieldInput label="Email"             type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@contoh.com" />
+      <FieldInput label="Nama Lengkap"      value={nama}  onChange={e => setNama(e.target.value)}  placeholder="Nama lengkap Anda" />
+      <FieldInput label="No. HP / WhatsApp" type="tel"    value={hp}    onChange={e => setHp(e.target.value)}    placeholder="08xxxxxxxxxx" />
+      <FieldInput label="Email"             type="email"  value={email} onChange={e => setEmail(e.target.value)} placeholder="email@contoh.com" />
       <FieldInput label="Password"          type="password" value={pass} onChange={e => setPass(e.target.value)} placeholder="min. 8 karakter" />
 
       <GlowButton onClick={submit} style={{ marginBottom: 8 }}>Daftar Sekarang</GlowButton>
 
       <button
-      onClick={onBack}
-      style={{
-        width: '100%',
-        border: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
-        fontSize: 13,
-        fontWeight: 600,
-        color: 'rgba(40,75,99,0.7)',
-        padding: '8px 0',
-        marginTop: 4,
-        transition: 'color 0.2s',
-      }}
-  onMouseEnter={e => e.currentTarget.style.color = '#284B63'}
-  onMouseLeave={e => e.currentTarget.style.color = 'rgba(40,75,99,0.7)'}
->
-  ← Kembali ke Login
-</button>
+        onClick={onBack}
+        style={{
+          width: '100%', border: 'none', background: 'transparent',
+          cursor: 'pointer', fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontSize: 13, fontWeight: 600, color: 'rgba(40,75,99,0.7)',
+          padding: '8px 0', marginTop: 4, transition: 'color 0.2s',
+        }}
+        onMouseEnter={e => e.currentTarget.style.color = '#284B63'}
+        onMouseLeave={e => e.currentTarget.style.color = 'rgba(40,75,99,0.7)'}
+      >
+        ← Kembali ke Login
+      </button>
     </div>
   )
 }
@@ -375,7 +374,7 @@ export default function Login() {
   const [loading,  setLoading]  = useState(false)
   const [showReg,  setShowReg]  = useState(false)
 
-  const handleLogin = () => {
+const handleLogin = () => {
     setError('')
     if (!email.trim()) return setError('Mohon masukkan email.')
     if (!pass)         return setError('Mohon masukkan password.')
@@ -399,7 +398,13 @@ export default function Login() {
         role:    akun.role,
         avatar:  akun.avatar,
       })
-      navigate(akun.role === 'admin' ? '/admin' : '/public', { replace: true })
+navigate(
+  akun.role === 'admin'  ? '/admin' :
+  akun.role === 'dinsos' ? '/dinsos' :
+  akun.role === 'satpol' ? '/satpolpp' :
+  '/public',
+  { replace: true }
+)
     }, 500)
   }
 

@@ -16,7 +16,21 @@ import AdminStatistik   from './pages/admin/Statistik'
 import AdminKelolaAkun  from './pages/admin/KelolaAkun'
 import LaporanDetail    from './pages/admin/LaporanDetail'
 import Petugas          from './pages/admin/Petugas'
-import AdminDinasSosial from './pages/dinasSosial/AdminDinasSosial'
+
+// Dinas Sosial
+import DinsosLayout    from './pages/dinasSosial/DinsosLayout'
+import DinsosBeranda   from './pages/dinasSosial/DinsosBeranda'
+import DinsosPeta      from './pages/dinasSosial/DinsosPeta'
+import DinsosStatistik from './pages/dinasSosial/DinsosStatistik'
+import DinsosExport    from './pages/dinasSosial/DinsosExport'
+import DinsosKasus     from './pages/dinasSosial/DinsosKasus'
+
+// Satpol PP
+import SatpolLayout  from './pages/satpolpp/SatpolLayout'
+import SatpolBeranda from './pages/satpolpp/SatpolBeranda'
+import SatpolTugas   from './pages/satpolpp/SatpolTugas'
+import SatpolInput   from './pages/satpolpp/SatpolInput'
+import SatpolRiwayat from './pages/satpolpp/SatpolRiwayat'
 
 // Public pages
 import PubBeranda from './pages/public/Beranda'
@@ -31,7 +45,7 @@ export default function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/"      element={<Navigate to="/public" replace />} />
+        <Route path="/"      element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
 
         {/* ── Admin ── */}
@@ -54,11 +68,47 @@ export default function App() {
           <Route path="petugas"      element={<Petugas />} />
         </Route>
 
-        {/* ── Dinas Sosial (terpisah, tanpa AdminLayout) ── */}
-        <Route path="/dinas-sosial/*" element={<AdminDinasSosial />} />
+        {/* ── Dinas Sosial ── */}
+        <Route
+          path="/dinsos"
+          element={
+            <ProtectedRoute requiredRole="dinsos">
+              <DinsosLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index               element={<Navigate to="beranda" replace />} />
+          <Route path="beranda"      element={<DinsosBeranda />} />
+          <Route path="peta"         element={<DinsosPeta />} />
+          <Route path="statistik"    element={<DinsosStatistik />} />
+          <Route path="export"       element={<DinsosExport />} />
+          <Route path="kasus"        element={<DinsosKasus />} />
+        </Route>
+
+        {/* ── Satpol PP ── */}
+        <Route
+          path="/satpolpp"
+          element={
+            <ProtectedRoute requiredRole="satpol">
+              <SatpolLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index          element={<SatpolBeranda />} />
+          <Route path="tugas"   element={<SatpolTugas />} />
+          <Route path="input"   element={<SatpolInput />} />
+          <Route path="riwayat" element={<SatpolRiwayat />} />
+        </Route>
 
         {/* ── Public ── */}
-        <Route path="/public" element={<PublicLayout />}>
+        <Route
+          path="/public"
+          element={
+            <ProtectedRoute requiredRole="public">
+              <PublicLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index           element={<PubBeranda />} />
           <Route path="laporan"  element={<PubLaporan />} />
           <Route path="riwayat"  element={<PubRiwayat />} />

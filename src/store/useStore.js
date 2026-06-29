@@ -1,7 +1,5 @@
 import { create } from 'zustand'
 
-// ── Seed data ──────────────────────────────────────────────
-
 const seedLaporan = [
   { id:'LP-2024-142', lokasi:'Kawasan Megamas',   subLokasi:'Jl. Pierre Tendean', jenis:'Berjualan', jumlah:2, sumber:'AI',       waktu:'14 mnt lalu', status:'baru',    lat:1.4784, lng:124.8421 },
   { id:'LP-2024-141', lokasi:'Pasar 45',          subLokasi:'Area Parkir',         jenis:'Mengamen',  jumlah:1, sumber:'M. Reza',  waktu:'1 jam lalu',  status:'proses',  lat:1.4850, lng:124.8472 },
@@ -37,8 +35,6 @@ const seedPetugas = [
   { id:'P-04', nama:'Dewi Lestari',  jabatan:'Petugas Lapangan', status:'tersedia' },
 ]
 
-// ── Akun yang diizinkan (di produksi: ganti dengan API) ───
-
 export const ACCOUNTS = [
   {
     id:       'ADM-001',
@@ -50,13 +46,22 @@ export const ACCOUNTS = [
     avatar:   '🛡️',
   },
   {
-    id:       'ADM-002',
-    email:    'supervisor@delcion.id',
-    password: 'super123',
-    role:     'admin',
-    nama:     'Supervisor Dinsos',
-    jabatan:  'Kepala Bidang',
-    avatar:   '👨‍💼',
+    id:       'DIN-001',
+    email:    'dinsos@delcion.id',
+    password: 'dinsos123',
+    role:     'dinsos',          // ← role baru
+    nama:     'Admin Dinas Sosial',
+    jabatan:  'Operator Dinas Sosial',
+    avatar:   '🏛️',
+  },
+  {
+  id:       'SAT-001',
+  email:    'satpol@delcion.id',
+  password: 'satpol123',
+  role:     'satpol',
+  nama:     'Petugas Satpol PP',
+  jabatan:  'Satuan Polisi Pamong Praja',
+  avatar:   '👮',
   },
   {
     id:       'USR-001',
@@ -69,12 +74,10 @@ export const ACCOUNTS = [
   },
 ]
 
-// ── Store ──────────────────────────────────────────────────
-
 export const useStore = create((set, get) => ({
 
   // ── Auth ──────────────────────────────────────────────────
-  user:            null,   // { id, email, nama, jabatan, role, avatar }
+  user:            null,
   isAuthenticated: false,
 
   login: (userData) => set({
@@ -96,7 +99,7 @@ export const useStore = create((set, get) => ({
   notifikasi:  seedNotifikasi,
   petugas:     seedPetugas,
   toast:       null,
-  activeModal: null,   // { type, data }
+  activeModal: null,
 
   // ── Actions ───────────────────────────────────────────────
   setRole: (role) => set({ role }),
@@ -170,4 +173,19 @@ export const useStore = create((set, get) => ({
       anak: [{ ...data, id, avatar: data.gender === 'Perempuan' ? '👧' : '👦' }, ...s.anak]
     }
   }),
+
+  // ── Register akun baru ────────────────────────────────────
+  registerAkun: ({ nama, email, password }) => {
+    const newAkun = {
+      id:       `USR-${String(Date.now()).slice(-4)}`,
+      email:    email.trim().toLowerCase(),
+      password: password,
+      role:     'public',
+      nama:     nama,
+      jabatan:  'Masyarakat Umum',
+      avatar:   '👤',
+    }
+    ACCOUNTS.push(newAkun)
+    return newAkun
+  },
 }))
