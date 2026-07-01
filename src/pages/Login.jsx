@@ -558,7 +558,7 @@ navigate(
                     cursor: 'pointer',
                   }}
                 >
-                  Daftar Akun untuk Satpol PP dan Dinas Sosial
+                  Daftar Akun (Warga/Instansi)
                 </button>
               </GlowBox>
             </>
