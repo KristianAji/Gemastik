@@ -540,25 +540,23 @@ textarea {
    Mobile nav bar (bottom)
    ============================================================ */
 
-.mobile-nav {
-  display: none;
+.mobile-nav{
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+    height: 74px;
 
-  z-index: 200;
+    z-index: 999;
 
-  background: var(--surface);
+    padding-bottom: env(safe-area-inset-bottom);
 
-  border-top: 1px solid var(--border);
-
-  backdrop-filter: blur(10px);
-
-  padding: 8px 0 env(safe-area-inset-bottom, 8px);
+    background: rgba(2,43,58,.95);
 }
-
+.public-main{
+    padding-bottom:120px;
+}
 .mobile-nav-items {
   display: flex;
   justify-content: space-around;

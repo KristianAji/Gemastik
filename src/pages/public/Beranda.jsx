@@ -378,102 +378,8 @@ export default function PubBeranda() {
         }
 
         /* ── FOOTER ── */
-        .footer-section {
-  background: #012330;
-  color: #BFDBF7;
-
-  padding: 80px 40px 28px;
-
-  position: relative;
-}
-  .footer-section::before {
-  content: '';
-
-  position: absolute;
-
-  top: 0;
-  left: 0;
-  right: 0;
-
-  height: 1px;
-
-  background: rgba(191,219,247,0.12);
-}
-
-        .footer-grid {
-  max-width: 1200px;
-
-  margin: 0 auto;
-
-  display: grid;
-
-  grid-template-columns: 1.6fr 1fr 1.2fr;
-
-  gap: 80px;
-
-  padding-bottom: 48px;
-
-  border-bottom: 1px solid rgba(191,219,247,0.1);
-}
-
-        .footer-logo {
-          font-size: 36px;
-          margin-bottom: 18px;
-        }
-
-        .footer-tagline {
-          font-size: 13px;
-          color: rgba(191,219,247,0.55);
-          margin-bottom: 20px;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-        }
-
-        .footer-logo span {
-          color: #BFDBF7;
-        }
-
-        .footer-desc {
-          font-size: 13px;
-          line-height: 1.7;
-          color: rgba(191, 219, 247, 0.65);
-          max-width: 300px;
-        }
-
-        .footer-heading {
-          font-family: 'Plus Jakarta Sans', sans-serif;
-          font-size: 12px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: rgba(191, 219, 247, 0.5);
-          margin-bottom: 14px;
-        }
-
-        .footer-link {
-          display: block;
-          font-size: 13px;
-          color: rgba(191, 219, 247, 0.75);
-          margin-bottom: 8px;
-          cursor: pointer;
-          transition: color 0.15s;
-          background: none;
-          border: none;
-          padding: 0;
-          text-align: left;
-          font-family: 'Google Sans Flex', sans-serif;
-        }
-        .footer-link:hover { color: #FFFFFF; }
-
-        .footer-kontak-item {
-          display: flex;
-          align-items: flex-start;
-          gap: 8px;
-          font-size: 13px;
-          color: rgba(191, 219, 247, 0.75);
-          margin-bottom: 10px;
-          line-height: 1.5;
-        }
+        /* Styling footer sudah dipindah sepenuhnya ke komponen FooterPublic.jsx,
+           supaya tidak ada class CSS duplikat/bentrok antar halaman. */
 
         /* ── Responsif ── */
         @media (max-width: 768px) {
@@ -496,20 +402,10 @@ export default function PubBeranda() {
           .langkah-grid {
             grid-template-columns: 1fr;
           }
-          .footer-grid {
-            grid-template-columns: 1fr;
-            gap: 28px;
-          }
           .statistik-section,
-          .cara-section,
-          .footer-section {
+          .cara-section {
             padding-left: 24px;
             padding-right: 24px;
-          }
-          .footer-bottom {
-            flex-direction: column;
-            gap: 8px;
-            text-align: center;
           }
         }
       `}</style>
