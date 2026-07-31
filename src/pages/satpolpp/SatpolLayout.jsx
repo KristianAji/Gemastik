@@ -40,16 +40,6 @@ const Icons = {
       <line x1="21" y1="12" x2="9" y2="12"/>
     </svg>
   ),
-  chevronLeft: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
-  ),
-  chevronRight: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="9 18 15 12 9 6"/>
-    </svg>
-  ),
   shield: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -71,17 +61,14 @@ const MOBILE_NAV = [
   { to: '/satpolpp/riwayat', icon: Icons.riwayat, label: 'Riwayat' },
 ]
 
-const SIDEBAR_W   = 220
-const COLLAPSED_W = 64
-
 export default function SatpolLayout() {
   const navigate   = useNavigate()
   const user       = useStore(s => s.user)
   const logout     = useStore(s => s.logout)
   const penugasan  = useStore(s => s.penugasan ?? [])
   const setRole    = useStore(s => s.setRole)
-  const [clock, setClock]         = useState('')
-  const [collapsed, setCollapsed] = useState(false)
+  const [clock, setClock]       = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const tugasAktif = penugasan.filter(p => p.status === 'aktif').length
 
@@ -99,8 +86,6 @@ export default function SatpolLayout() {
     return item.badge || null
   }
 
-  const sideW = collapsed ? COLLAPSED_W : SIDEBAR_W
-
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', minHeight: '100vh',
@@ -115,16 +100,32 @@ export default function SatpolLayout() {
           background: ${NAVY};
           height: 56px;
           display: flex; align-items: center; justify-content: space-between;
-          padding: 0 20px 0 0;
+          padding: 0 20px;
           flex-shrink: 0;
           position: sticky; top: 0; z-index: 200;
         }
-        .sp-logo-wrap {
-          display: flex; align-items: center; gap: 10px;
-          height: 56px; padding: 0 20px;
-          border-right: 1px solid rgba(255,255,255,0.1);
-          flex-shrink: 0; transition: width 0.25s ease; overflow: hidden;
+
+        /* ── HAMBURGER ── */
+        .sp-hamburger-btn {
+          width: 36px; height: 36px;
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          gap: 5px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          flex-shrink: 0;
         }
+        .sp-hamburger-line {
+          width: 22px; height: 2px;
+          background: #fff;
+          transition: all 0.25s ease;
+          border-radius: 2px;
+        }
+        .sp-hamburger-line.open:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .sp-hamburger-line.open:nth-child(2) { opacity: 0; }
+        .sp-hamburger-line.open:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
         .sp-logo-text {
           font-family: 'Plus Jakarta Sans', sans-serif;
           font-size: 15px; font-weight: 800;
@@ -138,19 +139,85 @@ export default function SatpolLayout() {
           letter-spacing: 0.06em; text-transform: uppercase;
           margin-top: 1px;
         }
-        .sp-toggle-btn {
-          width: 32px; height: 32px; border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.15);
-          background: rgba(255,255,255,0.08);
-          color: rgba(255,255,255,0.7);
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer; flex-shrink: 0;
+        .sp-logo-group { display: flex; align-items: center; gap: 12px; }
+
+        /* ── MENU OVERLAY ── */
+        .sp-menu-overlay {
+          position: fixed;
+          inset: 0;
+          top: 56px;
+          background: rgba(2,43,58,0.35);
+          z-index: 400;
+        }
+        .sp-menu-panel {
+          background: ${NAVY};
+          width: 270px;
+          max-width: 82vw;
+          height: 100%;
+          padding: 16px 12px;
+          box-shadow: 4px 0 24px rgba(2,43,58,0.25);
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          overflow-y: auto;
+        }
+        .sp-menu-section-label {
+          font-size: 9px; font-weight: 700; text-transform: uppercase;
+          letter-spacing: 1.4px; color: rgba(191,219,247,0.35);
+          padding: 10px 12px 5px; white-space: nowrap;
+        }
+        .sp-menu-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 8px 4px; }
+        .sp-menu-link {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 11px 12px; border-radius: 10px;
+          font-size: 13.5px; font-weight: 500;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          color: rgba(191,219,247,0.7); text-decoration: none;
+          gap: 10px;
           transition: background 0.15s, color 0.15s;
         }
-        .sp-toggle-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+        .sp-menu-link:hover { background: rgba(255,255,255,0.07); color: #fff; }
+        .sp-menu-link.active {
+          background: rgba(191,219,247,0.12); color: #fff; font-weight: 700;
+          border-left: 3px solid ${BLUE};
+          padding-left: 9px;
+        }
+        .sp-menu-link-icon { flex-shrink: 0; display: flex; align-items: center; }
+        .sp-menu-link-label { flex: 1; }
+        .sp-menu-badge {
+          font-size: 10px; font-weight: 700;
+          background: ${BLUE}; color: ${NAVY};
+          padding: 2px 7px; border-radius: 99px; flex-shrink: 0; line-height: 1.4;
+        }
+        .sp-menu-user {
+          display: flex; align-items: center; gap: 10px;
+          padding: 12px; margin-bottom: 6px;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          padding-bottom: 16px;
+        }
+        .sp-menu-avatar {
+          width: 34px; height: 34px; border-radius: 50%;
+          background: rgba(191,219,247,0.2);
+          border: 1.5px solid rgba(191,219,247,0.35);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 14px; color: ${BLUE}; flex-shrink: 0;
+        }
+        .sp-menu-user-name { font-size: 13px; font-weight: 700; color: #fff; }
+        .sp-menu-user-role { font-size: 10.5px; color: rgba(191,219,247,0.55); }
+        .sp-menu-logout {
+          margin-top: 10px; padding: 11px 12px; border-radius: 10px;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7);
+          font-size: 13px; font-weight: 600;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          cursor: pointer; display: flex; align-items: center; gap: 10px;
+          transition: all 0.18s;
+        }
+        .sp-menu-logout:hover { background: rgba(255,255,255,0.09); color: #fff; }
 
+        /* ── TOPBAR RIGHT ── */
         .sp-topbar-right {
-          display: flex; align-items: center; gap: 16px; margin-left: auto;
+          display: flex; align-items: center; gap: 16px;
         }
         .sp-live-badge {
           display: flex; align-items: center; gap: 6px;
@@ -188,59 +255,6 @@ export default function SatpolLayout() {
 
         .sp-body { display: flex; flex: 1; min-height: 0; overflow: hidden; }
 
-        .sp-sidebar {
-          background: ${NAVY};
-          display: flex; flex-direction: column; flex-shrink: 0;
-          overflow-y: auto; overflow-x: hidden;
-          transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
-          border-right: 1px solid rgba(255,255,255,0.08);
-        }
-        .sp-sidebar-inner {
-          padding: 16px 10px;
-          display: flex; flex-direction: column; gap: 2px;
-          flex: 1; min-width: ${SIDEBAR_W}px;
-        }
-        .sp-section-label {
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 1.4px; color: rgba(191,219,247,0.35);
-          padding: 10px 10px 5px; white-space: nowrap; overflow: hidden;
-        }
-        .sp-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 8px 4px; }
-
-        .sp-nav-item {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 10px 12px; border-radius: 10px;
-          font-size: 13px; font-weight: 500;
-          font-family: 'Plus Jakarta Sans', sans-serif;
-          color: rgba(191,219,247,0.65); text-decoration: none;
-          white-space: nowrap; overflow: hidden;
-          transition: background 0.15s, color 0.15s; gap: 10px;
-        }
-        .sp-nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
-        .sp-nav-item.active {
-          background: rgba(191,219,247,0.12); color: #fff; font-weight: 700;
-          border-left: 3px solid ${BLUE};
-        }
-        .sp-nav-item:not(.active) { border-left: 3px solid transparent; }
-        .sp-nav-icon { flex-shrink: 0; display: flex; align-items: center; }
-        .sp-nav-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
-        .sp-nav-badge {
-          font-size: 10px; font-weight: 700;
-          background: #BFDBF7; color: ${NAVY};
-          padding: 2px 7px; border-radius: 99px; flex-shrink: 0; line-height: 1.4;
-        }
-
-        .sp-sidebar-logout {
-          margin: 8px; padding: 10px 12px; border-radius: 10px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.45);
-          font-size: 12px; font-weight: 600;
-          font-family: 'Plus Jakarta Sans', sans-serif;
-          cursor: pointer; display: flex; align-items: center; gap: 10px;
-          white-space: nowrap; overflow: hidden; transition: all 0.18s;
-        }
-        .sp-sidebar-logout:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.75); }
-
         .sp-main {
           flex: 1; min-width: 0; overflow-y: auto; overflow-x: hidden;
           background: #F4F7F9; display: flex; flex-direction: column;
@@ -270,7 +284,6 @@ export default function SatpolLayout() {
         }
 
         @media (max-width: 768px) {
-          .sp-sidebar { display: none !important; }
           .sp-mobile-nav { display: block; }
           .sp-user-wrap, .sp-divider-v, .sp-clock { display: none !important; }
         }
@@ -278,17 +291,22 @@ export default function SatpolLayout() {
 
       {/* TOPBAR */}
       <header className="sp-topbar">
-        <div className="sp-logo-wrap" style={{ width: sideW, minWidth: sideW }}>
-          {!collapsed && (
-            <div>
-              <div className="sp-logo-text">Del<span>cion</span></div>
-              <div className="sp-logo-sub">Satpol PP</div>
-            </div>
-          )}
-          <button className="sp-toggle-btn" onClick={() => setCollapsed(v => !v)}>
-            {collapsed ? Icons.chevronRight : Icons.chevronLeft}
+        <div className="sp-logo-group">
+          <button
+            className="sp-hamburger-btn"
+            onClick={() => setMenuOpen(v => !v)}
+            aria-label="Buka menu"
+          >
+            <span className={`sp-hamburger-line${menuOpen ? ' open' : ''}`} />
+            <span className={`sp-hamburger-line${menuOpen ? ' open' : ''}`} />
+            <span className={`sp-hamburger-line${menuOpen ? ' open' : ''}`} />
           </button>
+          <div>
+            <div className="sp-logo-text">Del<span>cion</span></div>
+            <div className="sp-logo-sub">UPTD PPA</div>
+          </div>
         </div>
+
         <div className="sp-topbar-right">
           <div className="sp-live-badge"><span className="sp-live-dot" />SIAGA</div>
           <span className="sp-clock">{clock} WITA</span>
@@ -298,7 +316,7 @@ export default function SatpolLayout() {
               <div className="sp-avatar">{user.avatar ?? '👮'}</div>
               <div>
                 <div className="sp-user-name">{user.nama ?? 'Petugas'}</div>
-                <div className="sp-user-role">Satpol PP Manado</div>
+                <div className="sp-user-role">UPTD PPA Manado</div>
               </div>
             </div>
           )}
@@ -308,28 +326,41 @@ export default function SatpolLayout() {
         </div>
       </header>
 
+      {/* MENU OVERLAY (hamburger) */}
+      {menuOpen && (
+        <div className="sp-menu-overlay" onClick={() => setMenuOpen(false)}>
+          <nav className="sp-menu-panel" onClick={e => e.stopPropagation()}>
+            {user && (
+              <div className="sp-menu-user">
+                <div className="sp-menu-avatar">{user.avatar ?? '👮'}</div>
+                <div>
+                  <div className="sp-menu-user-name">{user.nama ?? 'Petugas'}</div>
+                  <div className="sp-menu-user-role">UPTD PPA Manado</div>
+                </div>
+              </div>
+            )}
+
+            <div className="sp-menu-section-label">Utama</div>
+            {NAV.filter(n => n.group === 'utama').map(n => (
+              <MenuItem key={n.to} {...n} badge={getBadge(n)} onNavigate={() => setMenuOpen(false)} />
+            ))}
+
+            <div className="sp-menu-divider" />
+            <div className="sp-menu-section-label">Pekerjaan</div>
+            {NAV.filter(n => n.group === 'kerja').map(n => (
+              <MenuItem key={n.to} {...n} badge={getBadge(n)} onNavigate={() => setMenuOpen(false)} />
+            ))}
+
+            <div style={{ flex: 1 }} />
+            <button className="sp-menu-logout" onClick={handleLogout}>
+              {Icons.logout} Keluar dari Akun
+            </button>
+          </nav>
+        </div>
+      )}
+
       {/* BODY */}
       <div className="sp-body">
-        <aside className="sp-sidebar" style={{ width: sideW }}>
-          <div className="sp-sidebar-inner">
-            {!collapsed && <div className="sp-section-label">Utama</div>}
-            {NAV.filter(n => n.group === 'utama').map(n => (
-              <SideItem key={n.to} {...n} badge={getBadge(n)} collapsed={collapsed} />
-            ))}
-            <div className="sp-divider" />
-            {!collapsed && <div className="sp-section-label">Pekerjaan</div>}
-            {NAV.filter(n => n.group === 'kerja').map(n => (
-              <SideItem key={n.to} {...n} badge={getBadge(n)} collapsed={collapsed} />
-            ))}
-            <div style={{ flex: 1 }} />
-            <div className="sp-divider" />
-            <button className="sp-sidebar-logout" onClick={handleLogout} title="Keluar">
-              <span style={{ flexShrink: 0 }}>{Icons.logout}</span>
-              {!collapsed && <span>Keluar dari Akun</span>}
-            </button>
-          </div>
-        </aside>
-
         <main className="sp-main">
           <Outlet />
         </main>
@@ -355,15 +386,15 @@ export default function SatpolLayout() {
   )
 }
 
-function SideItem({ to, label, icon, badge, exact, collapsed }) {
+function MenuItem({ to, label, icon, badge, exact, onNavigate }) {
   return (
     <NavLink to={to} end={exact}
-      className={({ isActive }) => `sp-nav-item${isActive ? ' active' : ''}`}
-      title={collapsed ? label : undefined}
+      onClick={onNavigate}
+      className={({ isActive }) => `sp-menu-link${isActive ? ' active' : ''}`}
     >
-      <span className="sp-nav-icon">{icon}</span>
-      {!collapsed && <span className="sp-nav-label">{label}</span>}
-      {!collapsed && badge && <span className="sp-nav-badge">{badge}</span>}
+      <span className="sp-menu-link-icon">{icon}</span>
+      <span className="sp-menu-link-label">{label}</span>
+      {badge && <span className="sp-menu-badge">{badge}</span>}
     </NavLink>
   )
 }

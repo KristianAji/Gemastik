@@ -72,6 +72,7 @@ const MOBILE_NAV = [
 
 export default function PublicLayout() {
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
   const isBeranda = location.pathname === '/public' || location.pathname === '/public/'
 
@@ -202,84 +203,95 @@ export default function PublicLayout() {
           padding-top: 56px;
         }
 
-        /* ── Mobile bottom nav ── */
-        .pub-mobile-nav {
-          display: none;
-          position: fixed;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          z-index: 499;
-          height: auto;
-          padding-bottom: env(safe-area-inset-bottom, 0px);
-          background: rgba(255, 255, 255, 0.88);
-          backdrop-filter: blur(20px) saturate(160%);
-          -webkit-backdrop-filter: blur(20px) saturate(160%);
-          border-top: 1px solid rgba(2, 43, 58, 0.08);
-          box-shadow: 0 -4px 20px rgba(2, 43, 58, 0.06);
-        }
 
-        .pub-mobile-nav-items {
-          display: flex;
-          justify-content: space-around;
-          align-items: center;
-          height: 60px;
-          padding: 0 8px;
-        }
+          .pub-hamburger-btn {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px; height: 36px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}
+.pub-hamburger-line {
+  width: 22px; height: 2px;
+  background: #fff;
+  transition: all 0.25s ease;
+  border-radius: 2px;
+}
+.pub-header.glass .pub-hamburger-line { background: #022B3A; }
+.pub-hamburger-line.open:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.pub-hamburger-line.open:nth-child(2) { opacity: 0; }
+.pub-hamburger-line.open:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-        .pub-mobile-nav-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 3px;
-          padding: 6px 12px;
-          border-radius: 10px;
-          text-decoration: none;
-          font-size: 10px;
-          font-weight: 600;
-          font-family: 'Inter', sans-serif;
-          color: #8CA0B8;
-          transition: color 0.15s, background 0.15s;
-          flex: 1;
-        }
-
-        .pub-mobile-nav-item:hover {
-          background: rgba(31, 122, 140, 0.06);
-        }
-
-        .pub-mobile-nav-item.active {
-          color: #1F7A8C;
-        }
-
-        @media (max-width: 768px) {
-          .pub-nav { display: none; }
-          .pub-mobile-nav { display: block; }
-          .pub-main {
-            padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
-          }
-        }
+.pub-menu-overlay {
+  position: fixed;
+  inset: 0;
+  top: 56px;
+  background: rgba(2,43,58,0.35);
+  z-index: 400;
+}
+.pub-menu-panel {
+  background: #fff;
+  width: 260px;
+  max-width: 80vw;
+  padding: 16px 12px;
+  box-shadow: 4px 0 24px rgba(2,43,58,0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pub-menu-link {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #022B3A;
+  text-decoration: none;
+}
+.pub-menu-link:hover { background: rgba(2,43,58,0.06); }
+.pub-menu-link.active { background: rgba(31,122,140,0.1); color: #1F7A8C; }
       `}</style>
 
       <div className="public-shell">
 
         {/* ── Navbar ── */}
         <header className={`pub-header ${scrolled ? 'glass' : 'transparent'}`}>
-          <nav className="pub-nav">
-            {NAV.map(n => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                end={n.exact}
-                className={({ isActive }) =>
-                  `pub-nav-link${isActive ? ' active' : ''}`
-                }
-              >
-                {n.label}
-              </NavLink>
-            ))}
-          </nav>
-        </header>
+  <button
+    className="pub-hamburger-btn"
+    onClick={() => setMenuOpen(v => !v)}
+    aria-label="Buka menu"
+  >
+    <span className={`pub-hamburger-line${menuOpen ? ' open' : ''}`} />
+    <span className={`pub-hamburger-line${menuOpen ? ' open' : ''}`} />
+    <span className={`pub-hamburger-line${menuOpen ? ' open' : ''}`} />
+  </button>
+
+  {menuOpen && (
+    <div className="pub-menu-overlay" onClick={() => setMenuOpen(false)}>
+      <nav className="pub-menu-panel" onClick={e => e.stopPropagation()}>
+        {NAV.map(n => (
+          <NavLink
+            key={n.to}
+            to={n.to}
+            end={n.exact}
+            onClick={() => setMenuOpen(false)}
+            className={({ isActive }) =>
+              `pub-menu-link${isActive ? ' active' : ''}`
+            }
+          >
+            {n.label}
+          </NavLink>
+        ))}
+      </nav>
+    </div>
+  )}
+</header>
 
         {/* ── Konten halaman ── */}
         <main className={`pub-main${isBeranda ? '' : ' with-padding'}`}>

@@ -195,7 +195,7 @@ export default function SatpolBeranda() {
         {/* HERO */}
         <div className="sb-hero">
           <div>
-            <div className="sb-hero-eyebrow">Selamat bertugas, Petugas Satpol PP</div>
+            <div className="sb-hero-eyebrow">Selamat bertugas, Petugas UPTD PPA</div>
             <h1 className="sb-hero-title">
               Dashboard Delcion:<br/>
               Penugasan &amp; Penanganan<br/>

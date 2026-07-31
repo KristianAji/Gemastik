@@ -28,11 +28,11 @@ const I = {
 /* ── Data dummy akun ────────────────────────────────────────── */
 const ACCOUNTS_DATA = [
   { id:1, nama:'Siti Rahayu, S.Sos',     dinas:'Dinas Sosial',  status:'aktif',    avatar:'SR', dibuat:'2024-01-15', jabatan:'Petugas Lapangan' },
-  { id:2, nama:'Bripda Aldi Pratama',     dinas:'Satpol PP',     status:'aktif',    avatar:'AP', dibuat:'2024-02-03', jabatan:'Anggota Satpol PP' },
+  { id:2, nama:'Bripda Aldi Pratama',     dinas:'UPTD PPA',     status:'aktif',    avatar:'AP', dibuat:'2024-02-03', jabatan:'Anggota UPTD PPA' },
   { id:3, nama:'Dra. Mariana Wenas',      dinas:'Dinas Sosial',  status:'aktif',    avatar:'MW', dibuat:'2024-02-10', jabatan:'Koordinator Lapangan' },
-  { id:4, nama:'Briptu Rezky Mantiri',    dinas:'Satpol PP',     status:'perlu',    avatar:'RM', dibuat:'2024-03-22', jabatan:'Anggota Satpol PP' },
+  { id:4, nama:'Briptu Rezky Mantiri',    dinas:'UPTD PPA',     status:'perlu',    avatar:'RM', dibuat:'2024-03-22', jabatan:'Anggota UPTD PPA' },
   { id:5, nama:'Febriani Kotambunan',     dinas:'Dinas Sosial',  status:'perlu',    avatar:'FK', dibuat:'2024-04-01', jabatan:'Petugas Lapangan' },
-  { id:6, nama:'Serda Yusuf Tamboto',     dinas:'Satpol PP',     status:'nonaktif', avatar:'YT', dibuat:'2023-11-05', jabatan:'Anggota Satpol PP' },
+  { id:6, nama:'Serda Yusuf Tamboto',     dinas:'UPTD PPA',     status:'nonaktif', avatar:'YT', dibuat:'2023-11-05', jabatan:'Anggota UPTD PPA' },
   { id:7, nama:'Grace Lumempouw, S.Sos',  dinas:'Dinas Sosial',  status:'aktif',    avatar:'GL', dibuat:'2024-05-18', jabatan:'Petugas Lapangan' },
 ]
 
@@ -415,11 +415,12 @@ export default function KelolAkun() {
             <div className="ka-banner-eyebrow">Pengelolaan Akun</div>
             <h1 className="ka-banner-title">
               Kelola Akun<br/>
-              <span>Dinsos &amp; Satpol PP</span>
+              <span>Dinsos &amp; UPTD PPA
+              </span>
             </h1>
             <div className="ka-banner-sub">
               {perluCount > 0
-                ? <>Ada <strong>{perluCount} akun</strong> yang membutuhkan verifikasi dari Dinas Sosial &amp; Satpol PP.</>
+                ? <>Ada <strong>{perluCount} akun</strong> yang membutuhkan verifikasi dari Dinas Sosial &amp; UPTD PPA.</>
                 : <>Semua akun aktif dan terverifikasi. Total <strong>{total} akun</strong> terdaftar.</>
               }
             </div>
@@ -445,7 +446,7 @@ export default function KelolAkun() {
           {[
             {
               icon: I.users, num: total, label: 'Total Akun Terdaftar',
-              delta: 'Dinas Sosial & Satpol PP', fill: 100,
+              delta: 'Dinas Sosial & UPTD PPA', fill: 100,
               accentColor: T, iconBg:'rgba(60,110,113,0.1)', iconBorder:'rgba(60,110,113,0.2)',
               iconColor: T, numColor: T, deltaColor: T, barColor: T,
             },
@@ -500,7 +501,7 @@ export default function KelolAkun() {
               <select className="ka-select" value={filterDinas} onChange={e => setFilterDinas(e.target.value)}>
                 <option>Semua</option>
                 <option>Dinas Sosial</option>
-                <option>Satpol PP</option>
+                <option>UPTD PPA</option>
               </select>
               <span className="ka-select-icon">{I.chevDown}</span>
             </div>
