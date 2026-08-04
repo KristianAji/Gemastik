@@ -436,8 +436,20 @@ navigate(
         fontFamily: "'Plus Jakarta Sans', sans-serif",
       }}>
 
-        {/* Logo & tagline */}
+{/* Logo & tagline */}
 <div style={{ textAlign: 'center', marginBottom: 28 }}>
+  <img
+    src="https://raw.githubusercontent.com/Delcion/delcion-assets/main/logo-delcion.png"
+    alt="Logo Delcion"
+    style={{
+      width: 56,
+      height: 56,
+      objectFit: 'contain',
+      display: 'block',
+      margin: '0 auto 10px',
+      filter: 'drop-shadow(0 2px 8px rgba(0,0,0,.25))',
+    }}
+  />
   <div
   style={{
     fontSize: 38,
@@ -465,7 +477,7 @@ navigate(
   >
     Sistem Pemantauan Pekerja di Bawah Umur
   </div>
-</div> 
+</div>
         {/* Card utama */}
         <GlowBox style={{ width: '100%', maxWidth: 400, padding: '28px 28px 24px' }}>
           {showReg ? (
