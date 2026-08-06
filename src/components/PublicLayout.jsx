@@ -298,29 +298,6 @@ export default function PublicLayout() {
           <Outlet />
         </main>
 
-        {/* ── Mobile bottom nav ── */}
-        <nav className="pub-mobile-nav">
-          <div className="pub-mobile-nav-items">
-            {MOBILE_NAV.map(({ to, label, exact, Icon }) => (
-              <NavLink
-                key={to}
-                to={to}
-                end={exact}
-                className={({ isActive }) =>
-                  `pub-mobile-nav-item${isActive ? ' active' : ''}`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon active={isActive} />
-                    <span>{label}</span>
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </div>
-        </nav>
-
       </div>
     </>
   )

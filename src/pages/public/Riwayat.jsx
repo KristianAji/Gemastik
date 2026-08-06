@@ -141,6 +141,18 @@ export default function PubRiwayat() {
         }
 
         /* ── HEADER — disamakan persis dengan .laporan-header ── */
+        .page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.page-title-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
         .riwayat-header {
           background: #022B3A;
           padding: 48px 40px 40px;
@@ -444,7 +456,17 @@ export default function PubRiwayat() {
             </div>
 
             <div className="riwayat-eyebrow">Pemantauan Personal</div>
-            <h1 className="riwayat-title">Riwayat <span>Laporan</span></h1>
+          <div className="page-title-row">
+            <img
+              src={`${import.meta.env.BASE_URL}logowhite.png`}
+              alt="Logo Delcion"
+              className="page-title-logo"
+            />
+
+            <h1 className="laporan-page-title">
+              Riwayat <span>Laporan</span>
+            </h1>
+          </div>
             <p className="riwayat-subtitle">
               Laporan yang pernah Anda buat dan status penanganannya.
             </p>

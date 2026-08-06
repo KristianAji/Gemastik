@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore, ACCOUNTS } from '../store/useStore'
-
 // ── Palette ──────────────────────────────────────────────
 // #F4F7F9  background utama
 // #FFFFFF  surface / card
@@ -439,17 +438,17 @@ navigate(
 {/* Logo & tagline */}
 <div style={{ textAlign: 'center', marginBottom: 28 }}>
   <img
-    src="https://raw.githubusercontent.com/Delcion/delcion-assets/main/logo-delcion.png"
-    alt="Logo Delcion"
-    style={{
-      width: 56,
-      height: 56,
-      objectFit: 'contain',
-      display: 'block',
-      margin: '0 auto 10px',
-      filter: 'drop-shadow(0 2px 8px rgba(0,0,0,.25))',
-    }}
-  />
+  src={`${import.meta.env.BASE_URL}logowhite.png`}
+  alt="Logo Delcion"
+  style={{
+    width: 56,
+    height: 56,
+    objectFit: 'contain',
+    display: 'block',
+    margin: '0 auto 10px',
+    filter: 'drop-shadow(0 2px 8px rgba(0,0,0,.25))',
+  }}
+/>
   <div
   style={{
     fontSize: 38,

@@ -71,6 +71,18 @@ export default function PubPeta() {
         }
 
         /* ── HEADER — identik dengan PubBuatLaporan ── */
+        .page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.page-title-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
         .peta-header {
           background: #022B3A;
           padding: 48px 40px 40px;
@@ -287,7 +299,17 @@ export default function PubPeta() {
               <span>Peta Laporan</span>
             </div>
             <div className="peta-badge">Sebaran Laporan Aktif</div>
-            <h1 className="peta-page-title">Peta <span>Laporan</span></h1>
+            <div className="page-title-row">
+            <img
+              src={`${import.meta.env.BASE_URL}logowhite.png`}
+              alt="Logo Delcion"
+              className="page-title-logo"
+            />
+
+            <h1 className="laporan-page-title">
+              Peta <span>Laporan</span>
+            </h1>
+          </div>
             <p className="peta-page-sub">
               Sebaran laporan pekerja anak aktif di Kota Manado secara real-time.
             </p>

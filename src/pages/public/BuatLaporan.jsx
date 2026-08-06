@@ -205,6 +205,17 @@ export default function PubBuatLaporan() {
         }
 
         /* ── PAGE HEADER ── */
+        .page-title-row {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+        .page-title-logo {
+          width: 42px;
+          height: 42px;
+          object-fit: contain;
+          flex-shrink: 0;
+        }
         .laporan-header {
           background: #022B3A;
           padding: 48px 40px 40px;
@@ -606,9 +617,17 @@ export default function PubBuatLaporan() {
               <span>Buat Laporan</span>
             </div>
             <div className="laporan-badge">Formulir Pelaporan Resmi DP3A</div>
+            <div className="page-title-row">
+            <img
+              src={`${import.meta.env.BASE_URL}logowhite.png`}
+              alt="Logo Delcion"
+              className="page-title-logo"
+            />
+
             <h1 className="laporan-page-title">
               Buat <span>Laporan</span>
             </h1>
+          </div>
             <p className="laporan-page-sub">
               Isi formulir di bawah untuk melaporkan temuan pekerja anak. Identitas Anda sepenuhnya terlindungi.
             </p>

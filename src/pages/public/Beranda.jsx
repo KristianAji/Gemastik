@@ -426,9 +426,29 @@ export default function PubBeranda() {
                 Setiap anak berhak mendapatkan perlindungan & hak tumbuh kembang yang layak
               </div>
 
-              <h1 className="hero-title">
-                Del<span className="hero-title-accent">cion</span>
-              </h1>
+              <h1
+  className="hero-title"
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: 16,
+  }}
+>
+  <img
+    src={`${import.meta.env.BASE_URL}logowhite.png`}
+    alt="Logo Delcion"
+    style={{
+      width: 56,
+      height: 56,
+      objectFit: 'contain',
+      flexShrink: 0,
+    }}
+  />
+
+  <span>
+    Del<span className="hero-title-accent">cion</span>
+  </span>
+</h1>
 
               <p className="hero-subtitle">
                 Sistem pemantauan dan perlindungan pekerja anak di bawah umur Kota Manado

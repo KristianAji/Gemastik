@@ -29,33 +29,6 @@ const Icons = {
       <line x1="16" y1="17" x2="8" y2="17"/>
     </svg>
   ),
-  anak: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-      <circle cx="9" cy="7" r="4"/>
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-    </svg>
-  ),
-  rehabilitasi: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-    </svg>
-  ),
-  bantuan: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="3" width="15" height="13" rx="2"/>
-      <path d="M16 8h3l4 4v5h-7V8z"/>
-      <circle cx="5.5" cy="18.5" r="2.5"/>
-      <circle cx="18.5" cy="18.5" r="2.5"/>
-    </svg>
-  ),
-  notif: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-    </svg>
-  ),
   statistik: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="18" y1="20" x2="18" y2="10"/>
@@ -68,27 +41,11 @@ const Icons = {
       <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
     </svg>
   ),
-  akun: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-      <circle cx="12" cy="7" r="4"/>
-    </svg>
-  ),
   logout: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
       <polyline points="16 17 21 12 16 7"/>
       <line x1="21" y1="12" x2="9" y2="12"/>
-    </svg>
-  ),
-  chevronLeft: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
-  ),
-  chevronRight: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="9 18 15 12 9 6"/>
     </svg>
   ),
 }
@@ -110,9 +67,6 @@ const MOBILE_NAV = [
   { to: '/dinsos/export',   icon: Icons.laporan,   label: 'Export'    },
 ]
 
-const SIDEBAR_W   = 220
-const COLLAPSED_W = 64
-
 export default function DinsosLayout() {
   const navigate   = useNavigate()
   const notifikasi = useStore(s => s.notifikasi)
@@ -121,10 +75,10 @@ export default function DinsosLayout() {
   const user       = useStore(s => s.user)
   const logout     = useStore(s => s.logout)
 
-  const [clock, setClock]         = useState('')
-  const [collapsed, setCollapsed] = useState(false)
+  const [clock, setClock]     = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
 
-  const unread    = notifikasi.filter(n => !n.read).length
+  const unread     = notifikasi.filter(n => !n.read).length
   const kasusAktif = penugasan.filter(p => p.status === 'aktif').length
 
   useEffect(() => {
@@ -142,8 +96,6 @@ export default function DinsosLayout() {
     return item.badge || null
   }
 
-  const sideW = collapsed ? COLLAPSED_W : SIDEBAR_W
-
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', minHeight: '100vh',
@@ -154,29 +106,43 @@ export default function DinsosLayout() {
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         * { box-sizing: border-box; }
 
-        /* ── TOPBAR ── */
         .dn-topbar {
           background: ${NAVY};
           height: 56px;
           display: flex; align-items: center; justify-content: space-between;
-          padding: 0 20px 0 0;
+          padding: 0 20px;
           flex-shrink: 0;
           position: sticky; top: 0; z-index: 200;
         }
 
-        /* ── LOGO ── */
-        .dn-logo-wrap {
-          display: flex; align-items: center; gap: 10px;
-          height: 56px; padding: 0 20px;
-          border-right: 1px solid rgba(255,255,255,0.1);
+        /* ── HAMBURGER ── */
+        .dn-hamburger-btn {
+          width: 36px; height: 36px;
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          gap: 5px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
           flex-shrink: 0;
-          transition: width 0.25s ease; overflow: hidden;
         }
+        .dn-hamburger-line {
+          width: 22px; height: 2px;
+          background: #fff;
+          transition: all 0.25s ease;
+          border-radius: 2px;
+        }
+        .dn-hamburger-line.open:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .dn-hamburger-line.open:nth-child(2) { opacity: 0; }
+        .dn-hamburger-line.open:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        .dn-logo-group { display: flex; align-items: center; gap: 12px; }
+        .dn-logo-img { width: 26px; height: 26px; object-fit: contain; flex-shrink: 0; }
         .dn-logo-text {
           font-family: 'Plus Jakarta Sans', sans-serif;
-          font-size: 20px; font-weight: 800;
+          font-size: 15px; font-weight: 800;
           letter-spacing: -0.03em; color: #fff;
-          white-space: nowrap;
+          white-space: nowrap; line-height: 1.2;
         }
         .dn-logo-text span { color: ${BLUE}; }
         .dn-logo-sub {
@@ -186,33 +152,82 @@ export default function DinsosLayout() {
           margin-top: 1px;
         }
 
-        /* ── TOGGLE ── */
-        .dn-toggle-btn {
-          width: 32px; height: 32px; border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.15);
-          background: rgba(255,255,255,0.08);
-          color: rgba(255,255,255,0.7);
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer; flex-shrink: 0;
+        /* ── MENU OVERLAY ── */
+        .dn-menu-overlay {
+          position: fixed;
+          inset: 0;
+          top: 56px;
+          background: rgba(2,43,58,0.35);
+          z-index: 400;
+        }
+        .dn-menu-panel {
+          background: ${NAVY};
+          width: 270px;
+          max-width: 82vw;
+          height: 100%;
+          padding: 16px 12px;
+          box-shadow: 4px 0 24px rgba(2,43,58,0.25);
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          overflow-y: auto;
+        }
+        .dn-menu-section-label {
+          font-size: 9px; font-weight: 700; text-transform: uppercase;
+          letter-spacing: 1.4px; color: rgba(191,219,247,0.35);
+          padding: 10px 12px 5px; white-space: nowrap;
+        }
+        .dn-menu-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 8px 4px; }
+        .dn-menu-link {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 11px 12px; border-radius: 10px;
+          font-size: 13.5px; font-weight: 500;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          color: rgba(191,219,247,0.7); text-decoration: none;
+          gap: 10px;
           transition: background 0.15s, color 0.15s;
         }
-        .dn-toggle-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+        .dn-menu-link:hover { background: rgba(255,255,255,0.07); color: #fff; }
+        .dn-menu-link.active {
+          background: rgba(191,219,247,0.12); color: #fff; font-weight: 700;
+          border-left: 3px solid ${BLUE};
+          padding-left: 9px;
+        }
+        .dn-menu-link-icon { flex-shrink: 0; display: flex; align-items: center; }
+        .dn-menu-link-label { flex: 1; }
+        .dn-menu-badge {
+          font-size: 10px; font-weight: 700;
+          background: ${BLUE}; color: ${NAVY};
+          padding: 2px 7px; border-radius: 99px; flex-shrink: 0; line-height: 1.4;
+        }
+        .dn-menu-user {
+          display: flex; align-items: center; gap: 10px;
+          padding: 12px; margin-bottom: 6px;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          padding-bottom: 16px;
+        }
+        .dn-menu-avatar {
+          width: 34px; height: 34px; border-radius: 50%;
+          background: rgba(191,219,247,0.2);
+          border: 1.5px solid rgba(191,219,247,0.35);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 14px; color: ${BLUE}; flex-shrink: 0;
+        }
+        .dn-menu-user-name { font-size: 13px; font-weight: 700; color: #fff; }
+        .dn-menu-user-role { font-size: 10.5px; color: rgba(191,219,247,0.55); }
+        .dn-menu-logout {
+          margin-top: 10px; padding: 11px 12px; border-radius: 10px;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7);
+          font-size: 13px; font-weight: 600;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          cursor: pointer; display: flex; align-items: center; gap: 10px;
+          transition: all 0.18s;
+        }
+        .dn-menu-logout:hover { background: rgba(255,255,255,0.09); color: #fff; }
 
         /* ── TOPBAR RIGHT ── */
-        .dn-topbar-right {
-          display: flex; align-items: center; gap: 16px; margin-left: auto;
-        }
-        .dn-live-badge {
-          display: flex; align-items: center; gap: 6px;
-          font-size: 11px; font-weight: 700; color: #6EE7B7;
-          letter-spacing: 0.04em;
-        }
-        .dn-live-dot {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: #6EE7B7; animation: dn-pulse 2s ease infinite;
-        }
-        @keyframes dn-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
+        .dn-topbar-right { display: flex; align-items: center; gap: 16px; }
         .dn-clock { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; }
         .dn-divider-v { width: 1px; height: 24px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
         .dn-user-wrap { display: flex; align-items: center; gap: 10px; }
@@ -236,67 +251,8 @@ export default function DinsosLayout() {
         }
         .dn-logout-btn:hover { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.25); }
 
-        /* ── BODY ── */
         .dn-body { display: flex; flex: 1; min-height: 0; overflow: hidden; }
 
-        /* ── SIDEBAR ── */
-        .dn-sidebar {
-          background: ${NAVY};
-          display: flex; flex-direction: column; flex-shrink: 0;
-          overflow-y: auto; overflow-x: hidden;
-          transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
-          border-right: 1px solid rgba(255,255,255,0.08);
-        }
-        .dn-sidebar-inner {
-          padding: 16px 10px;
-          display: flex; flex-direction: column; gap: 2px;
-          flex: 1; min-width: ${SIDEBAR_W}px;
-        }
-        .dn-section-label {
-          font-size: 9px; font-weight: 700; text-transform: uppercase;
-          letter-spacing: 1.4px; color: rgba(191,219,247,0.35);
-          padding: 10px 10px 5px; white-space: nowrap; overflow: hidden;
-        }
-        .dn-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 8px 4px; }
-
-        /* ── NAV ITEM ── */
-        .dn-nav-item {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 10px 12px; border-radius: 10px;
-          font-size: 13px; font-weight: 500;
-          font-family: 'Plus Jakarta Sans', sans-serif;
-          color: rgba(191,219,247,0.65); text-decoration: none;
-          white-space: nowrap; overflow: hidden;
-          transition: background 0.15s, color 0.15s; gap: 10px;
-        }
-        .dn-nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
-        .dn-nav-item.active {
-          background: rgba(191,219,247,0.12); color: #fff; font-weight: 700;
-          border-left: 3px solid ${BLUE};
-        }
-        .dn-nav-item:not(.active) { border-left: 3px solid transparent; }
-        .dn-nav-icon { flex-shrink: 0; display: flex; align-items: center; }
-        .dn-nav-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
-        .dn-nav-badge {
-          font-size: 10px; font-weight: 700;
-          background: ${BLUE}; color: ${NAVY};
-          padding: 2px 7px; border-radius: 99px;
-          flex-shrink: 0; line-height: 1.4;
-        }
-
-        /* ── SIDEBAR LOGOUT ── */
-        .dn-sidebar-logout {
-          margin: 8px; padding: 10px 12px; border-radius: 10px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.45);
-          font-size: 12px; font-weight: 600;
-          font-family: 'Plus Jakarta Sans', sans-serif;
-          cursor: pointer; display: flex; align-items: center; gap: 10px;
-          white-space: nowrap; overflow: hidden; transition: all 0.18s;
-        }
-        .dn-sidebar-logout:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.75); }
-
-        /* ── MAIN ── */
         .dn-main {
           flex: 1; min-width: 0; overflow-y: auto; overflow-x: hidden;
           background: #F4F7F9; display: flex; flex-direction: column;
@@ -327,7 +283,6 @@ export default function DinsosLayout() {
         }
 
         @media (max-width: 768px) {
-          .dn-sidebar { display: none !important; }
           .dn-mobile-nav { display: block; }
           .dn-user-wrap, .dn-divider-v, .dn-clock { display: none !important; }
         }
@@ -335,21 +290,24 @@ export default function DinsosLayout() {
 
       {/* ── TOPBAR ── */}
       <header className="dn-topbar">
-        <div className="dn-logo-wrap" style={{ width: sideW, minWidth: sideW }}>
-          {!collapsed && (
-            <div>
-              <div className="dn-logo-text">Del<span>cion</span></div>
-              <div className="dn-logo-sub">Dinsos</div>
-            </div>
-          )}
-          <button className="dn-toggle-btn" onClick={() => setCollapsed(v => !v)}
-            title={collapsed ? 'Buka sidebar' : 'Tutup sidebar'}>
-            {collapsed ? Icons.chevronRight : Icons.chevronLeft}
+        <div className="dn-logo-group">
+          <button
+            className="dn-hamburger-btn"
+            onClick={() => setMenuOpen(v => !v)}
+            aria-label="Buka menu"
+          >
+            <span className={`dn-hamburger-line${menuOpen ? ' open' : ''}`} />
+            <span className={`dn-hamburger-line${menuOpen ? ' open' : ''}`} />
+            <span className={`dn-hamburger-line${menuOpen ? ' open' : ''}`} />
           </button>
+          <img src={`${import.meta.env.BASE_URL}logowhite.png`} alt="Logo Delcion" className="dn-logo-img" />
+          <div>
+            <div className="dn-logo-text">Del<span>cion</span></div>
+            <div className="dn-logo-sub">Dinsos</div>
+          </div>
         </div>
 
         <div className="dn-topbar-right">
-          <div className="dn-live-badge"><span className="dn-live-dot" />AKTIF</div>
           <span className="dn-clock">{clock} WITA</span>
           <div className="dn-divider-v" />
           {user && (
@@ -367,30 +325,35 @@ export default function DinsosLayout() {
         </div>
       </header>
 
-      {/* ── BODY ── */}
-      <div className="dn-body">
+      {/* ── MENU OVERLAY (hamburger) ── */}
+      {menuOpen && (
+        <div className="dn-menu-overlay" onClick={() => setMenuOpen(false)}>
+          <nav className="dn-menu-panel" onClick={e => e.stopPropagation()}>
+            {user && (
+              <div className="dn-menu-user">
+                <div className="dn-menu-avatar">{user.avatar ?? '👤'}</div>
+                <div>
+                  <div className="dn-menu-user-name">{user.nama ?? 'Petugas Dinsos'}</div>
+                  <div className="dn-menu-user-role">{user.jabatan ?? 'Dinas Sosial Manado'}</div>
+                </div>
+              </div>
+            )}
 
-        {/* ── SIDEBAR ── */}
-        <aside className="dn-sidebar" style={{ width: sideW }}>
-          <div className="dn-sidebar-inner">
-
-            {!collapsed && <div className="dn-section-label">Menu Utama</div>}
+            <div className="dn-menu-section-label">Menu Utama</div>
             {NAV.map(n => (
-              <SideItem key={n.to} {...n} badge={getBadge(n)} collapsed={collapsed} />
+              <MenuItem key={n.to} {...n} badge={getBadge(n)} onNavigate={() => setMenuOpen(false)} />
             ))}
 
             <div style={{ flex: 1 }} />
-            <div className="dn-divider" />
-
-            <button className="dn-sidebar-logout" onClick={handleLogout} title="Keluar dari Akun">
-              <span style={{ flexShrink: 0 }}>{Icons.logout}</span>
-              {!collapsed && <span>Keluar dari Akun</span>}
+            <button className="dn-menu-logout" onClick={handleLogout}>
+              {Icons.logout} Keluar dari Akun
             </button>
+          </nav>
+        </div>
+      )}
 
-          </div>
-        </aside>
-
-        {/* ── MAIN ── */}
+      {/* ── BODY ── */}
+      <div className="dn-body">
         <main className="dn-main">
           <Outlet />
         </main>
@@ -418,16 +381,16 @@ export default function DinsosLayout() {
   )
 }
 
-/* ── SideItem ─────────────────────────────────────────────────── */
-function SideItem({ to, label, icon, badge, exact, collapsed }) {
+/* ── MenuItem ─────────────────────────────────────────────────── */
+function MenuItem({ to, label, icon, badge, exact, onNavigate }) {
   return (
     <NavLink to={to} end={exact}
-      className={({ isActive }) => `dn-nav-item${isActive ? ' active' : ''}`}
-      title={collapsed ? label : undefined}
+      onClick={onNavigate}
+      className={({ isActive }) => `dn-menu-link${isActive ? ' active' : ''}`}
     >
-      <span className="dn-nav-icon">{icon}</span>
-      {!collapsed && <span className="dn-nav-label">{label}</span>}
-      {!collapsed && badge && <span className="dn-nav-badge">{badge}</span>}
+      <span className="dn-menu-link-icon">{icon}</span>
+      <span className="dn-menu-link-label">{label}</span>
+      {badge && <span className="dn-menu-badge">{badge}</span>}
     </NavLink>
   )
 }

@@ -125,7 +125,12 @@ export default function SatpolLayout() {
         .sp-hamburger-line.open:nth-child(1) { transform: translateY(7px) rotate(45deg); }
         .sp-hamburger-line.open:nth-child(2) { opacity: 0; }
         .sp-hamburger-line.open:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
+        .sp-logo-img {
+          width: 26px;
+          height: 26px;
+          object-fit: contain;
+          flex-shrink: 0;
+        }
         .sp-logo-text {
           font-family: 'Plus Jakarta Sans', sans-serif;
           font-size: 15px; font-weight: 800;
@@ -292,20 +297,27 @@ export default function SatpolLayout() {
       {/* TOPBAR */}
       <header className="sp-topbar">
         <div className="sp-logo-group">
-          <button
-            className="sp-hamburger-btn"
-            onClick={() => setMenuOpen(v => !v)}
-            aria-label="Buka menu"
-          >
-            <span className={`sp-hamburger-line${menuOpen ? ' open' : ''}`} />
-            <span className={`sp-hamburger-line${menuOpen ? ' open' : ''}`} />
-            <span className={`sp-hamburger-line${menuOpen ? ' open' : ''}`} />
-          </button>
-          <div>
-            <div className="sp-logo-text">Del<span>cion</span></div>
-            <div className="sp-logo-sub">UPTD PPA</div>
-          </div>
-        </div>
+  <button
+    className="sp-hamburger-btn"
+    onClick={() => setMenuOpen(v => !v)}
+    aria-label="Buka menu"
+  >
+    <span className={`sp-hamburger-line${menuOpen ? ' open' : ''}`} />
+    <span className={`sp-hamburger-line${menuOpen ? ' open' : ''}`} />
+    <span className={`sp-hamburger-line${menuOpen ? ' open' : ''}`} />
+  </button>
+
+  <img
+    src={`${import.meta.env.BASE_URL}logowhite.png`}
+    alt="Logo Delcion"
+    className="sp-logo-img"
+  />
+
+  <div>
+    <div className="sp-logo-text">Del<span>cion</span></div>
+    <div className="sp-logo-sub">UPTD PPA</div>
+  </div>
+</div>
 
         <div className="sp-topbar-right">
           <div className="sp-live-badge"><span className="sp-live-dot" />SIAGA</div>

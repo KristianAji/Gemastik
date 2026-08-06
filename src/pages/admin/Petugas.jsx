@@ -139,7 +139,7 @@ export default function AdminPetugas() {
         <div className="ap-title-wrap">
           <span className="ap-title-icon">{Icon.shield}</span>
           <div>
-            <div className="ap-title">Petugas &amp; Unit Satpol PP</div>
+            <div className="ap-title">Petugas &amp; Unit UPTD PPA</div>
             <div className="ap-subtitle">Kelola daftar petugas/unit untuk penugasan pada laporan terverifikasi</div>
           </div>
         </div>
@@ -157,7 +157,7 @@ export default function AdminPetugas() {
           <div className="ap-form-grid">
             <div>
               <label className="ap-field-label">Nama Petugas / Unit</label>
-              <input className="ap-input" value={form.nama} onChange={e => setForm(f => ({ ...f, nama:e.target.value }))} placeholder="cth. Satpol PP Unit Megamas" />
+              <input className="ap-input" value={form.nama} onChange={e => setForm(f => ({ ...f, nama:e.target.value }))} placeholder="cth. UPTD PPA Unit Megamas" />
             </div>
             <div>
               <label className="ap-field-label">Unit / Divisi</label>
@@ -191,7 +191,7 @@ export default function AdminPetugas() {
             </div>
           </div>
         ))}
-        {list.length === 0 && <div className="ap-empty">Belum ada data petugas / unit Satpol PP</div>}
+        {list.length === 0 && <div className="ap-empty">Belum ada data petugas / unit UPTD PPA</div>}
       </div>
     </div>
   )

@@ -157,6 +157,18 @@ export default function PubTentang() {
         }
 
         /* ── HEADER — identik PubBuatLaporan ── */
+        .page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.page-title-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
         .tentang-header {
           background: #022B3A;
           padding: 48px 40px 40px;
@@ -610,7 +622,17 @@ export default function PubTentang() {
               <span>Tentang</span>
             </div>
             <div className="tentang-badge">Edukasi & Informasi</div>
-            <h1 className="tentang-page-title">Edukasi <span>Perlindungan Anak</span></h1>
+            <div className="page-title-row">
+              <img
+                src={`${import.meta.env.BASE_URL}logowhite.png`}
+                alt="Logo Delcion"
+                className="page-title-logo"
+              />
+
+              <h1 className="laporan-page-title">
+                Edukasi <span>Perlindungan Anak</span>
+              </h1>
+            </div>
             <p className="tentang-page-sub">
               Memahami hak-hak anak dan regulasi yang melindungi mereka adalah langkah pertama
               untuk menciptakan Kota Manado yang aman dan layak bagi setiap anak.
