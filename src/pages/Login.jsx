@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useStore, ACCOUNTS } from '../store/useStore'
+import { useStore } from '../store/useStore'
 // ── Palette ──────────────────────────────────────────────
 // #F4F7F9  background utama
 // #FFFFFF  surface / card
@@ -249,18 +249,24 @@ function RegisterForm({ onBack, onSuccess }) {
   const [error, setError] = useState('')
   const [ok,    setOk]    = useState(false)
 
-  const submit = () => {
+const submit = async () => {
     setError('')
     if (!nama || !hp || !email || !pass) return setError('Mohon lengkapi semua data.')
     if (pass.length < 8)                 return setError('Password minimal 8 karakter.')
     if (!/\S+@\S+\.\S+/.test(email))    return setError('Format email tidak valid.')
 
-    const sudahAda = ACCOUNTS.find(a => a.email === email.trim().toLowerCase())
-    if (sudahAda) return setError('Email sudah terdaftar.')
-
-    registerAkun({ nama, email, password: pass })
-    setOk(true)
-    setTimeout(() => onSuccess(email), 1600)
+    try {
+      await registerAkun({ nama, no_telepon: hp, email, password: pass })
+      setOk(true)
+      setTimeout(() => onSuccess(email), 1600)
+    } catch (err) {
+      const errors = err.response?.data?.errors
+      if (errors?.email) {
+        setError('Email sudah terdaftar.')
+      } else {
+        setError('Gagal mendaftar. Coba lagi.')
+      }
+    }
   }
 
   return (
@@ -373,39 +379,34 @@ export default function Login() {
   const [loading,  setLoading]  = useState(false)
   const [showReg,  setShowReg]  = useState(false)
 
-const handleLogin = () => {
+const handleLogin = async () => {
     setError('')
     if (!email.trim()) return setError('Mohon masukkan email.')
     if (!pass)         return setError('Mohon masukkan password.')
 
-    const akun = ACCOUNTS.find(
-      a => a.email === email.trim().toLowerCase() && a.password === pass
-    )
-
-    if (!akun) {
-      setError('Email atau password salah.')
-      return
-    }
-
     setLoading(true)
-    setTimeout(() => {
-      login({
-        id:      akun.id,
-        email:   akun.email,
-        nama:    akun.nama,
-        jabatan: akun.jabatan,
-        role:    akun.role,
-        avatar:  akun.avatar,
-      })
-navigate(
-  akun.role === 'admin'  ? '/admin' :
-  akun.role === 'dinsos' ? '/dinsos' :
-  akun.role === 'satpol' ? '/satpolpp' :
-  '/public',
-  { replace: true }
-)
-    }, 500)
-  }
+    try {
+      const user = await login(email.trim().toLowerCase(), pass)
+      navigate(
+        user.role === 'admin'  ? '/admin' :
+        user.role === 'dinsos' ? '/dinsos' :
+        user.role === 'satpol' ? '/satpolpp' :
+        '/public',
+        { replace: true }
+      )
+    } catch (err) {
+      const msg = err.response?.data?.message
+      if (err.response?.status === 403) {
+        setError(msg ?? 'Akun belum diverifikasi admin.')
+      } else if (err.response?.status === 401) {
+        setError('Email atau password salah.')
+      } else {
+        setError('Terjadi kesalahan. Coba lagi.')
+      }
+    } finally {
+      setLoading(false)
+    }
+}
 
   const handleRegisterSuccess = (registeredEmail) => {
     setShowReg(false)

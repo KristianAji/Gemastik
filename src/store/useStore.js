@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import api from '../services/api'
 
 const seedLaporan = [
   { id:'LP-2024-142', lokasi:'Kawasan Megamas',   subLokasi:'Jl. Pierre Tendean', jenis:'Berjualan', jumlah:2, sumber:'AI',       waktu:'14 mnt lalu', status:'baru',    lat:1.4784, lng:124.8421 },
@@ -74,23 +75,68 @@ export const ACCOUNTS = [
   },
 ]
 
+const avatarByRole = {
+    admin:  '🛡️',
+    dinsos: '🏛️',
+    satpol: '👮',
+    public: '👤',
+}
+
 export const useStore = create((set, get) => ({
 
-  // ── Auth ──────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────
   user:            null,
   isAuthenticated: false,
 
-  login: (userData) => set({
-    user:            userData,
-    isAuthenticated: true,
-    role:            userData.role,
-  }),
+  login: async (email, password) => {
+    const res = await api.post('/auth/login', { email, password })
+    const { token, user } = res.data
+    localStorage.setItem('delcion_token', token)
+    set({
+      user: {
+        id:      user.id,
+        email:   user.email,
+        nama:    user.name,
+        jabatan: user.role,
+        role:    user.role,
+        avatar:  avatarByRole[user.role] ?? '👤',
+      },
+      isAuthenticated: true,
+      role:            user.role,
+    })
+    return user
+  },
 
-  logout: () => set({
-    user:            null,
-    isAuthenticated: false,
-    role:            'public',
-  }),
+  logout: async () => {
+    try {
+      await api.post('/auth/logout')
+    } catch (_) {}
+    localStorage.removeItem('delcion_token')
+    set({ user: null, isAuthenticated: false, role: 'public' })
+  },
+
+  restoreSession: async () => {
+    const token = localStorage.getItem('delcion_token')
+    if (!token) return
+    try {
+      const res  = await api.get('/auth/me')
+      const user = res.data
+      set({
+        user: {
+          id:      user.id,
+          email:   user.email,
+          nama:    user.name,
+          jabatan: user.role,
+          role:    user.role,
+          avatar:  avatarByRole[user.role] ?? '👤',
+        },
+        isAuthenticated: true,
+        role:            user.role,
+      })
+    } catch (_) {
+      localStorage.removeItem('delcion_token')
+    }
+  },
 
   // ── App state ─────────────────────────────────────────────
   role:        'public',
@@ -174,18 +220,16 @@ export const useStore = create((set, get) => ({
     }
   }),
 
-  // ── Register akun baru ────────────────────────────────────
-  registerAkun: ({ nama, email, password }) => {
-    const newAkun = {
-      id:       `USR-${String(Date.now()).slice(-4)}`,
-      email:    email.trim().toLowerCase(),
-      password: password,
-      role:     'public',
-      nama:     nama,
-      jabatan:  'Masyarakat Umum',
-      avatar:   '👤',
-    }
-    ACCOUNTS.push(newAkun)
-    return newAkun
+// ── Register akun baru (via API) ──────────────────────────
+  registerAkun: async ({ nama, no_telepon, email, password }) => {
+    const res = await api.post('/auth/register', {
+      name:                 nama,
+      email,
+      password,
+      password_confirmation: password,
+      no_telepon:           no_telepon ?? null,
+      role:                 'public',
+    })
+    return res.data
   },
 }))

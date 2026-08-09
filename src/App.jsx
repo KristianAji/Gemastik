@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useStore } from './store/useStore'
 import AdminLayout    from './components/AdminLayout'
 import PublicLayout   from './components/PublicLayout'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -42,6 +44,12 @@ import PubTentang from './pages/public/Tentang'
 import './styles/globals.css'
 
 export default function App() {
+  const restoreSession = useStore(s => s.restoreSession)
+
+  useEffect(() => {
+    restoreSession()
+  }, [])
+
   return (
     <HashRouter>
       <Routes>
